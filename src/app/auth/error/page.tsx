@@ -13,7 +13,7 @@ const errorMessages: Record<string, string> = {
 export default function AuthErrorPage() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">

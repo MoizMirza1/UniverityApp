@@ -5,6 +5,7 @@ import DefaultLayout from "@/components/DefaultLayout";
 import { getServerSession } from "next-auth";
 import SessionProviders from "@/components/context/SessionProviders";
 import { authOptions } from "@/lib/authOptions";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "University System",
@@ -17,12 +18,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
+
+  //  if (!session) {
+  //   redirect("/auth/signin");
+  // }
   
-  return (
+ return (
     <html lang="en">
       <body className={inter.className}>
         <SessionProviders session={session}>
-          <DefaultLayout>{children}</DefaultLayout>
+          {children}
         </SessionProviders>
       </body>
     </html>

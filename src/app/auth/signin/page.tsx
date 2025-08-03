@@ -1,14 +1,12 @@
 // app/auth/signin/page.tsx
 "use client";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +17,14 @@ export default function SignInPage() {
       email: formData.get("email"),
       password: formData.get("password"),
       redirect: false,
-      callbackUrl,
     });
 
     if (result?.error) {
-      // Redirect manually to error page with error code
-      router.push(`/auth/error?error=${result.error}&callbackUrl=${encodeURIComponent(callbackUrl)}`);
-    } else if (result?.url) {
-      router.push(result.url);
+      setError(result.error);
+    } else if (result?.ok) {
+      // Redirect to home - middleware will handle role-based routing
+      
+      router.push("/");
     }
   };
 

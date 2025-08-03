@@ -27,7 +27,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         // Mock user - replace with real DB check
         if (credentials?.email === "admin@university.edu" && 
-            credentials?.password === "password123") {
+            credentials?.password === "123") {
           return {
             id: "1",
             name: "Admin",
@@ -49,10 +49,18 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as string;
         session.user.id = token.id;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // After successful sign in, redirect to dashboard
+      // The middleware will handle the role-based redirection
+      if (url.startsWith(baseUrl + "/auth/signin") || url === baseUrl + "/") {
+       return baseUrl + "/";
+      }
+      return url;
     }
   },
   pages: {
