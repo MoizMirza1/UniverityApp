@@ -10,5 +10,11 @@ export default function SessionProviders({
   children: React.ReactNode
   session: Session | null
 }): React.ReactNode {
-  return <SessionProvider session={session}>{children}</SessionProvider>
+  return   <SessionProvider 
+      session={session}
+      refetchInterval={5 * 60} 
+      refetchOnWindowFocus={true}
+    >
+      {children}
+    </SessionProvider>
 }

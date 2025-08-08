@@ -1,40 +1,33 @@
-// middleware.ts
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-export default withAuth(
-  function middleware(req) {
-    const path = req.nextUrl.pathname;
-    const role = req.nextauth.token?.role;
-
-    // Redirect to appropriate dashboard based on role
-    if (path === "/dashboard") {
-      if (role === "admin") {
-        return NextResponse.redirect(new URL("/admin", req.url));
+export default withAuth({
+  callbacks: {
+    authorized: async ({ token, req }) => {
+      if (!token) return false;
+      
+      // Verify token with backend on protected routes
+      if (req.nextUrl.pathname.startsWith('/admin') || 
+          req.nextUrl.pathname.startsWith('/faculty')) {
+        try {
+          const res = await fetch(`${process.env.BACKEND_API_URL}/auth/login`, {
+            headers: {
+              Authorization: `Bearer ${token.accessToken}`,
+            },
+          });
+          return res.ok;
+        } catch {
+          return false;
+        }
       }
-      if (role === "faculty") {
-        return NextResponse.redirect(new URL("/faculty", req.url));
-      }
-    }
-
-    // Protect admin routes
-    if (path.startsWith("/admin") && role !== "admin") {
-      return NextResponse.redirect(new URL("/auth/unauthorized", req.url));
-    }
-
-    // Protect faculty routes
-    if (path.startsWith("/faculty") && role !== "faculty") {
-      return NextResponse.redirect(new URL("/auth/unauthorized", req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
+      return true;
     },
-  }
-);
+  },
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
+  },
+});
 
 export const config = {
   matcher: ["/dashboard", "/dashboard/:path*", "/admin/:path*", "/faculty/:path*"],
