@@ -58,7 +58,7 @@ export default async function DashboardPage() {
       {/* Footer */}
       <footer className="bg-white py-4 px-6 border-t">
         <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} University System
+          Â© {new Date().getFullYear()} University System
         </div>
       </footer>
     </div>
