@@ -13,7 +13,7 @@ const page = () => {
             <span className="text-gray-400">&gt;</span>
             <span className="hover:text-[#0aa6ff] cursor-pointer">Courses</span>
             <span className="text-gray-400">&gt;</span>
-            <span className="text-gray-800">All Courses Listt</span>
+            <span className="text-gray-800">All Courses List</span>
           </nav>
         </div>
       <Allcourses />
