@@ -22,7 +22,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <section className="bg-gray-50 min-h-screen flex">
+    <section className="bg-[#f1f3f5] min-h-screen flex">
       <Sidebar />
       <div className="flex-1 lg:pl-64">
         <Header />

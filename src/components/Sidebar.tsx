@@ -1,15 +1,31 @@
-// components/Sidebar.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DashboardIcon, CoursesIcon, StudentsIcon, FacultyIcon, SettingsIcon, LogoutIcon } from "./Icons";
-import { useState } from "react";
+import {
+  DashboardIcon,
+  CoursesIcon,
+  StudentsIcon,
+  FacultyIcon,
+  SettingsIcon,
+  LogoutIcon
+} from "./Icons";
+import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 
 const adminNavigation = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
-  { name: "Courses", href: "/admin/courses", icon: CoursesIcon },
+  {
+    name: "Courses",
+    icon: CoursesIcon,
+    children: [
+      { name: "All Courses", href: "/admin/courses" },
+      { name: "Add Courses", href: "/admin/courses/add" },
+      { name: "Add Course Bootstrap", href: "/admin/courses/add-bootstrap" },
+      { name: "Edit Course", href: "/admin/courses/edit" },
+      { name: "About Course", href: "/admin/courses/about" },
+    ]
+  },
   { name: "Students", href: "/admin/students", icon: StudentsIcon },
   { name: "Faculty", href: "/admin/faculty", icon: FacultyIcon },
   { name: "Settings", href: "/admin/settings", icon: SettingsIcon }
@@ -17,7 +33,13 @@ const adminNavigation = [
 
 const facultyNavigation = [
   { name: "Dashboard", href: "/faculty", icon: DashboardIcon },
-  { name: "My Courses", href: "/faculty/courses", icon: CoursesIcon },
+  {
+    name: "Courses",
+    icon: CoursesIcon,
+    children: [
+      { name: "My Courses", href: "/faculty/courses" }
+    ]
+  },
   { name: "Students", href: "/faculty/students", icon: StudentsIcon }
 ];
 
@@ -25,13 +47,32 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { data: session } = useSession();
-  
-  // Determine navigation based on user role
-  const navigation = session?.user?.role === 'admin' 
-    ? adminNavigation 
+
+  const navigation = session?.user?.role === "admin"
+    ? adminNavigation
     : facultyNavigation;
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+
+  // Auto-expand dropdown if a child route is active
+  useEffect(() => {
+    const newOpenMenus: { [key: string]: boolean } = {};
+    navigation.forEach(item => {
+      if ("children" in item) {
+        newOpenMenus[item.name] = item.children.some(child =>
+          pathname === child.href || pathname.startsWith(`${child.href}/`)
+        );
+      }
+    });
+    setOpenMenus(newOpenMenus);
+  }, [pathname]);
+
+  const toggleMenu = (name: string) => {
+    setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   const handleLogout = () => {
     setShowLogoutModal(false);
@@ -47,21 +88,74 @@ export default function Sidebar() {
               <ul className="-mx-2 space-y-1">
                 {navigation.map((item) => (
                   <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={`${
-                        isActive(item.href)
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
-                      } group flex items-center gap-x-3 rounded-md p-2 text-sm font-medium`}
-                    >
-                      <item.icon
+                    {"children" in item ? (
+                      <div>
+                        <div
+                          onClick={() => toggleMenu(item.name)}
+                          className={`group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm font-medium ${
+                            openMenus[item.name]
+                              ? "text-blue-600 bg-blue-50"
+                              : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                          } cursor-pointer`}
+                        >
+                          <div className="flex items-center gap-x-3">
+                            <item.icon
+                              className={`h-5 w-5 ${
+                                openMenus[item.name]
+                                  ? "text-blue-600"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                            {item.name}
+                          </div>
+                          <span className="text-xs">
+                            {openMenus[item.name] ? "▲" : "▼"}
+                          </span>
+                        </div>
+
+                        {/* Dropdown with animation */}
+                        <div
+                          className={`ml-8 overflow-hidden transition-all duration-300 ease-in-out ${
+                            openMenus[item.name] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <ul className="mt-1 space-y-1">
+                            {item.children.map((subItem) => (
+                              <li key={subItem.name}>
+                                <Link
+                                  href={subItem.href}
+                                  className={`${
+                                    isActive(subItem.href)
+                                      ? "bg-blue-50 text-blue-600"
+                                      : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                                  } block rounded-md px-2 py-1 text-sm`}
+                                >
+                                  {subItem.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href}
                         className={`${
-                          isActive(item.href) ? "text-blue-600" : "text-gray-400"
-                        } h-5 w-5`}
-                      />
-                      {item.name}
-                    </Link>
+                          isActive(item.href)
+                            ? "bg-blue-50 text-blue-600"
+                            : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                        } group flex items-center gap-x-3 rounded-md p-2 text-sm font-medium`}
+                      >
+                        <item.icon
+                          className={`${
+                            isActive(item.href)
+                              ? "text-blue-600"
+                              : "text-gray-400"
+                          } h-5 w-5`}
+                        />
+                        {item.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
