@@ -9,8 +9,8 @@ const page = () => {
         title="All Course"
         breadcrumbs={["Courses", "All Courses"]}
       />
-      <AllCourses />  
-      
+      <AllCourses />
+
     </div>
   )
 }
