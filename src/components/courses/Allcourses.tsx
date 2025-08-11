@@ -189,7 +189,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   );
 };
 
-const AllCourses: React.FC = () => {
+export const AllCourses: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-full mx-auto px-8 py-8">
@@ -205,5 +205,3 @@ const AllCourses: React.FC = () => {
     </div>
   );
 };
-
-export default AllCourses;

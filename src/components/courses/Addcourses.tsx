@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 
-const Addcourses: React.FC = () => {
+export const AddCourses: React.FC = () => {
   const [formData, setFormData] = useState({
     courseName: '',
     courseCode: '',
@@ -397,5 +397,3 @@ const Addcourses: React.FC = () => {
     </div>
   );
 };
-
-export default Addcourses;
