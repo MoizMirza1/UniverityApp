@@ -19,8 +19,8 @@ const adminNavigation = [
     name: "Courses",
     icon: CoursesIcon,
     children: [
-      { name: "All Courses", href: "/admin/courses" },
-      { name: "Add Courses", href: "/admin/courses/add" },
+      { name: "All Courses", href: "/admin/courses/allcourses" },
+      { name: "Add Courses", href: "/admin/courses/addcourses" },
       { name: "Add Course Bootstrap", href: "/admin/courses/add-bootstrap" },
       { name: "Edit Course", href: "/admin/courses/edit" },
       { name: "About Course", href: "/admin/courses/about" },
