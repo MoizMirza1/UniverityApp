@@ -1,0 +1,43 @@
+name: PR Close Greeting
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post PR closing message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const user = pr.user.login;
+            const title = pr.title;
+            const url = pr.html_url;
+            const isMerged = pr.merged;
+
+            const mergedMsg = `
+            🎉 **Amazing job @${user}!**  
+            Your pull request **"${title}"** has been successfully **merged** into \`${context.payload.repository.default_branch}\` 🚀  
+
+            🌟 Thanks for making the project better — you're awesome!  
+            📄 [View your merged PR here](${url})  
+            `;
+
+            const closedMsg = `
+            ⚠️ **Hey @${user}!**  
+            Your pull request **"${title}"** was closed without merging.  
+
+            💡 Don't be discouraged! Every contribution helps the project grow 💪  
+            📄 [View your closed PR here](${url})  
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: isMerged ? mergedMsg : closedMsg
+            });
