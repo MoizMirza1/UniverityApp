@@ -75,34 +75,21 @@ export const AllCourses: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const data = await getCourses();
-        console.log(data, "this is raw API data");
+  const fetchCourses = async () => {
+    try {
+      const courses = await getCourses(); 
+      setCourses(courses);
+    } catch (err) {
+      setError("Failed to fetch courses");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-       
-        const transformed = data.map((course: Course) => ({
-          _id: course._id,
-          title: course.title || "Untitled",
-          image: course.image || "/images/CourseImg.webp",
-          date: course.startDate || "",
-          duration: course.duration || "",
-          professor: course.professor || "N/A",
-          students: course.students?.length?.toString() || "0",
-          likes: course.likes?.toString() || "0",
-        }));
+  fetchCourses();
+}, []);
 
-        setCourses(transformed);
-      } catch (err) {
-        setError("Failed to fetch courses");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, []);
 
   if (loading) {
     return (
@@ -132,19 +119,19 @@ export const AllCourses: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {courses.map((course) => (
-              <CourseCard 
-                key={course._id} 
-                _id={course._id}
+           {courses.map((course) => (
+              <CourseCard
+                key={course._id}
                 title={course.title}
                 image={course.image}
-                date={course.date}
+                date={course.startDate}
                 duration={course.duration}
                 professor={course.professor}
-                students={course.students}
+                students={course.students.length}
                 likes={course.likes}
               />
             ))}
+
           </div>
         )}
       </div>
