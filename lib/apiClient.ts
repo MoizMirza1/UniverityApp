@@ -1,19 +1,27 @@
 
 import { getSession } from "next-auth/react";
 
-export const apiClient = async (url: string, options: RequestInit = {}) => {
+// lib/apiClient.ts
+export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const session = await getSession();
   
   const headers = {
-    "Content-Type": "application/json",
     ...options.headers,
   };
+
+  if (!headers["Content-Type"] && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (session?.accessToken) {
     headers["Authorization"] = `Bearer ${session.accessToken}`;
   }
 
-  const res = await fetch(`${process.env.BACKEND_API_URL}${url}`, {
+
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const apiUrl = `${baseUrl}/api${endpoint}`; 
+
+  const res = await fetch(apiUrl, {
     ...options,
     headers,
   });

@@ -6,14 +6,15 @@ export interface BaseCourse {
   image: string;
   duration: string;
   startDate: string;
-  professorId: number;
+  professor: string;
   category?: string;
+  date?:string
   level?: 'beginner' | 'intermediate' | 'advanced';
   prerequisites?: string[];
 }
 
 export interface Course extends BaseFields, BaseCourse {
   status?: 'draft' | 'published' | 'archived';
-  studentsEnrolled: number;
-  likes: number;
+  students: [];
+  likes: string;
 }
