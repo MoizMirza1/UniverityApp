@@ -1,5 +1,5 @@
 export interface BaseFields {
-  id: number;
+  _id: string;
   createdAt?: string;
   updatedAt?: string;
 }

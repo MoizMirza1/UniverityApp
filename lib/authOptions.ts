@@ -40,6 +40,7 @@ export const authOptions: AuthOptions = {
               name: data.data.user.name,
               email: data.data.user.email,
               role: data.data.user.role,
+              accessToken: data.token,
             };
           }
 
