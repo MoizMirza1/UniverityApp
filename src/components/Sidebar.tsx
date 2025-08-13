@@ -26,7 +26,17 @@ const adminNavigation = [
       { name: "About Course", href: "/admin/courses/about" },
     ]
   },
-  { name: "Students", href: "/admin/students", icon: StudentsIcon },
+  {
+    name: "Students",
+    icon: StudentsIcon,
+    children: [
+      { name: "All Students", href: "/admin/students/allStudents" },
+      { name: "Add Student", href: "/admin/students/addStudents" },
+      { name: "Add Student Bootstrap", href: "/admin/students/add-bootstrap" },
+      { name: "Edit Student", href: "/admin/students/editStudents" },
+      { name: "About Student", href: "/admin/students/aboutStudents"},
+    ]
+  },
   { name: "Faculty", href: "/admin/faculty", icon: FacultyIcon },
   { name: "Settings", href: "/admin/settings", icon: SettingsIcon }
 ];
@@ -40,7 +50,14 @@ const facultyNavigation = [
       { name: "My Courses", href: "/faculty/courses" }
     ]
   },
-  { name: "Students", href: "/faculty/students", icon: StudentsIcon }
+  {
+    name: "Students",
+    icon: StudentsIcon,
+    children: [
+      { name: "My Students", href: "/faculty/students" },
+      { name: "Student Progress", href: "/faculty/students/progress" }
+    ]
+  }
 ];
 
 export default function Sidebar() {
@@ -65,7 +82,7 @@ export default function Sidebar() {
       }
     });
     setOpenMenus(newOpenMenus);
-  }, [pathname]);
+  }, [pathname, navigation]);
 
   const toggleMenu = (name: string) => {
     setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
