@@ -1,12 +1,17 @@
 import React from 'react'
-import AboutStudents from '@/components/students/AboutStudents'
+import PageHeader from '@/components/common/PageHeader'
+import AboutStudent  from '@/components/students/AboutStudents'
 
-const page = () => {
+const AboutStudentPage = () => {
   return (
     <div>
-      <AboutStudents />
+      <PageHeader 
+        title="Student Details" 
+        breadcrumbs={["Students", "Student Details"]} 
+      />
+      <AboutStudent />
     </div>
   )
 }
 
-export default page
+export default AboutStudentPage
