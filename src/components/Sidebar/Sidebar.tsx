@@ -9,9 +9,11 @@ import {
   FacultyIcon,
   SettingsIcon,
   LogoutIcon
-} from "./Icons";
+} from "../Icons";
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
+import SidebarHeader from "./SidebarHeader";
+
 
 const adminNavigation = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
@@ -98,7 +100,8 @@ export default function Sidebar() {
 
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-10 lg:flex lg:w-64 lg:flex-col bg-white border-r">
-      <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 pt-20">
+        <SidebarHeader />
+      <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 ">
         <nav className="flex flex-1 flex-col">
           <ul className="flex flex-1 flex-col gap-y-7">
             <li>

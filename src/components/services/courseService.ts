@@ -19,3 +19,5 @@ export const getCourse = async (id: string) => {
   const data = await apiClient(`/courses/${id}`);
   return data.data.course;
 };
+
+
