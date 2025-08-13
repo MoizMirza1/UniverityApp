@@ -1,7 +1,7 @@
 // components/MainLayout.tsx
 "use client";
 import { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/Sidebar";
 import Header from "./Header";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
