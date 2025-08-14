@@ -11,10 +11,12 @@ export interface BaseCourse {
   date?:string
   level?: 'beginner' | 'intermediate' | 'advanced';
   prerequisites?: string[];
+  
 }
 
 export interface Course extends BaseFields, BaseCourse {
   status?: 'draft' | 'published' | 'archived';
-  students: [];
+  students: number;
+  
   likes: string;
 }

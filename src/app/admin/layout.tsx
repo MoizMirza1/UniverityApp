@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/Sidebar/Sidebar";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
