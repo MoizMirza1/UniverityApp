@@ -5,6 +5,7 @@ import Image from "next/image";
 import { format } from 'date-fns';
 import { getCourses } from "../services";
 import { Course } from "../lib/types/course";
+import Link from 'next/link';
 
 interface CourseCardProps {
   _id: string;
@@ -18,6 +19,7 @@ interface CourseCardProps {
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({
+  _id,
   title,
   image,
   date,
@@ -56,9 +58,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </p>
 
         <div className="flex items-center justify-between mt-auto">
-          <button className="bg-[#0aa6ff] cursor-pointer text-white text-xs font-semibold px-3 py-1 rounded-sm hover:bg-[#008ddd] transition-colors duration-200">
+          <Link 
+            href={`/admin/courses/about/${_id}`}
+            className="bg-[#0aa6ff] cursor-pointer text-white text-xs font-semibold px-3 py-1 rounded-sm hover:bg-[#008ddd] transition-colors duration-200"
+          >
             READ MORE
-          </button>
+          </Link>
           <div className="flex items-center text-[#0aa6ff] text-xs font-medium select-none">
             <Heart className="w-4 h-4 mr-1" />
             {likes}
@@ -75,21 +80,20 @@ export const AllCourses: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  const fetchCourses = async () => {
-    try {
-      const courses = await getCourses(); 
-      setCourses(courses);
-    } catch (err) {
-      setError("Failed to fetch courses");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchCourses = async () => {
+      try {
+        const courses = await getCourses(); 
+        setCourses(courses);
+      } catch (err) {
+        setError("Failed to fetch courses");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchCourses();
-}, []);
-
+    fetchCourses();
+  }, []);
 
   if (loading) {
     return (
@@ -119,9 +123,10 @@ export const AllCourses: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-           {courses.map((course) => (
+            {courses.map((course) => (
               <CourseCard
                 key={course._id}
+                _id={course._id}
                 title={course.title}
                 image={course.image}
                 date={course.startDate}
@@ -131,7 +136,6 @@ export const AllCourses: React.FC = () => {
                 likes={course.likes}
               />
             ))}
-
           </div>
         )}
       </div>
