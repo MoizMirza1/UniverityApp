@@ -1,5 +1,5 @@
 import React from 'react'
-import {AddCourses} from '@/components/courses/Addcourses'
+import { AddCourses } from '@/components/courses/Addcourses'
 import PageHeader from '@/components/common/PageHeader'
 
 const page = () => {

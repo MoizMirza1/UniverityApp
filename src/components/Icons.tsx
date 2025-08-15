@@ -9,6 +9,23 @@ export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function ProfessorsIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      {/* Graduation cap */}
+      <path d="M12 3L1 9l11 6 9-4.91V14h2V9L12 3z" />
+      {/* Person head */}
+      <circle cx="12" cy="18" r="2" />
+      {/* Shoulders */}
+      <path d="M6 21c0-2 3-3 6-3s6 1 6 3v1H6v-1z" />
+    </svg>
+  );
+}
+
 export function CoursesIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="currentColor">

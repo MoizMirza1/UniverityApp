@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   DashboardIcon,
+  ProfessorsIcon,
   CoursesIcon,
   StudentsIcon,
   FacultyIcon,
@@ -17,6 +18,17 @@ import SidebarHeader from "./SidebarHeader";
 
 const adminNavigation = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
+  {
+    name: "Professors",
+    icon: ProfessorsIcon,
+    children: [
+      { name: "All Professors", href: "/admin/professors/allProfessors" },
+      { name: "Add Professors", href: "/admin/professors/addProfessors" },
+      { name: "Add Professors Bootstrap", href: "/admin/professors/add-bootstrap" },
+      { name: "Edit Professors", href: "/admin/professors/editProfessors" },
+      { name: "About Professors", href: "/admin/professors/aboutProfessors"},
+    ]
+  },
   {
     name: "Courses",
     icon: CoursesIcon,
