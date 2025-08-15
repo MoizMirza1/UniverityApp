@@ -18,18 +18,13 @@ export const getCourse = async (id: string) => {
   return data.data.course;
 };
 
-// ✅ New function for total students
-export const getTotalStudents = async () => {
-  const courses = await getCourses();
-  let total = 0;
 
-  courses.forEach(course => {
-    if (Array.isArray(course.students)) {
-      total += course.students.length;
-    } else if (typeof course.students === "number") {
-      total += course.students;
-    }
-  });
-
-  return total;
+export const getCourseStudents = async (courseId: string) => {
+  const course = await getCourse(courseId);
+  if (Array.isArray(course.students)) {
+    return course.students.length;
+  } else if (typeof course.students === "number") {
+    return course.students;
+  }
+  return 0;
 };

@@ -25,7 +25,7 @@ const adminNavigation = [
       { name: "Add Courses", href: "/admin/courses/addcourses" },
       { name: "Add Course Bootstrap", href: "/admin/courses/add-bootstrap" },
       { name: "Edit Course", href: "/admin/courses/edit" },
-      { name: "About Course", href: "/admin/courses/about" },
+      // { name: "About Course", href: "/admin/courses/about" },
     ]
   },
   {
