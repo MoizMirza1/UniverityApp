@@ -77,7 +77,7 @@ export default function Sidebar() {
   useEffect(() => {
     const newOpenMenus: { [key: string]: boolean } = {};
     navigation.forEach(item => {
-      if ("children" in item) {
+      if ("children" in item && Array.isArray(item.children)) {
         newOpenMenus[item.name] = item.children.some(child =>
           pathname === child.href || pathname.startsWith(`${child.href}/`)
         );
@@ -140,7 +140,7 @@ export default function Sidebar() {
                           }`}
                         >
                           <ul className="mt-1 space-y-1">
-                            {item.children.map((subItem) => (
+                            {item.children?.map((subItem) => (
                               <li key={subItem.name}>
                                 <Link
                                   href={subItem.href}
