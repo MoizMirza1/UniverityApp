@@ -1,17 +1,18 @@
 import React from 'react'
 import PageHeader from '@/components/common/PageHeader'
-import AboutProfessors from '@/components/professors/AboutProfessor'
+import AboutStudent  from '@/components/students/AboutStudents'
+import AboutProfessor from '@/components/professors/AboutProfessor'
 
-const AboutProfessor = () => {
+const AboutProfessorPage = () => {
   return (
     <div>
       <PageHeader 
         title="Professor Details" 
         breadcrumbs={["Professor", "Professor Details"]} 
       />
-      <AboutProfessors/>
+      <AboutProfessor />
     </div>
   )
 }
 
-export default AboutProfessor
+export default AboutProfessorPage
