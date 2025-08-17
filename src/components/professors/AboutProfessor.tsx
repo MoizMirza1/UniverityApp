@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
+import { EmojiIcon, ImageIcon, FileIcon, HeartIcon } from "@/components/Icons";
 
 type Attachment = {
   type: 'file' | 'image';
@@ -244,9 +245,6 @@ const AboutProfessor = () => {
                         ) : (
                           <>
                             <div className="flex items-center gap-2">
-                              <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                              </svg>
                               <p className="text-xs truncate flex-1">{attachment.name}</p>
                               <button 
                                 onClick={() => removeAttachment(index)}
@@ -271,9 +269,7 @@ const AboutProfessor = () => {
                         className="text-gray-500 hover:text-yellow-500 p-1 rounded hover:bg-gray-100"
                         title="Add emoji"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <EmojiIcon className="h-5 w-5" />
                       </button>
                       
                       {showEmojiPicker && (
@@ -299,9 +295,7 @@ const AboutProfessor = () => {
                       className="text-gray-500 hover:text-green-500 p-1 rounded hover:bg-gray-100"
                       title="Add image"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <ImageIcon className="h-5 w-5" />
                       <input 
                         type="file" 
                         ref={imageInputRef} 
@@ -318,9 +312,7 @@ const AboutProfessor = () => {
                       className="text-gray-500 hover:text-blue-500 p-1 rounded hover:bg-gray-100"
                       title="Attach file"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                      </svg>
+                      <FileIcon className="h-5 w-5" />
                       <input 
                         type="file" 
                         ref={fileInputRef} 
@@ -357,13 +349,11 @@ const AboutProfessor = () => {
                   className="flex items-center gap-1 text-gray-500 hover:text-pink-600 focus:outline-none mt-2"
                   title="Like"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                  </svg>
+                  <HeartIcon className="h-5 w-5" />
                   <span className="text-sm">Like</span>
                 </button>
               </div>
-              <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
+              <hr className="my-1 border-t-1 border-gray-50 opacity-50"/>
               
               {/* div 2 */}
               <div className="mt-6 space-y-8">
@@ -385,9 +375,7 @@ const AboutProfessor = () => {
                   className="flex items-center gap-1 text-gray-500 hover:text-pink-600 focus:outline-none mt-2"
                   title="Like"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                  </svg>
+                  <HeartIcon className="h-5 w-5" />
                   <span className="text-sm">Like</span>
                 </button>
               </div>
@@ -414,9 +402,7 @@ const AboutProfessor = () => {
                   className="flex items-center gap-1 text-gray-500 hover:text-pink-600 focus:outline-none mt-2"
                   title="Like"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                  </svg>
+                  <HeartIcon className="h-5 w-5" />
                   <span className="text-sm">Like</span>
                 </button>
               </div>
