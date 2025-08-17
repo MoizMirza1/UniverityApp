@@ -23,6 +23,31 @@ export const getCourse = async (id: string) => {
   return data.data.course;
 };
 
+export const deleteCourse = async (id: string) => {
+  const data = await apiClient(`/courses/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return data.data; 
+};
+
+export const updateCourse = async (id: string, updatedData: any) => {
+  const data = await apiClient(`/courses/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  return data.data.course;
+};
+
+
+
 
 export const getCourseStudents = async (courseId: string) => {
   const course = await getCourse(courseId);
