@@ -23,6 +23,8 @@ export const AddCourses: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const professors = [
     'Dr. John Smith',
@@ -93,7 +95,7 @@ export const AddCourses: React.FC = () => {
   };
 
   const formatDate = (date: Date) => {
-    return format(date, 'MMMM yyyy'); // e.g., August 2025
+    return format(date, 'MMMM yyyy');
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -173,6 +175,7 @@ export const AddCourses: React.FC = () => {
       contactNumber: '',
       coursePhoto: null
     });
+    setError(null);
   };
 
   return (
@@ -187,7 +190,22 @@ export const AddCourses: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="px-4 md:px-8 py-8 space-y-6 md:space-y-8">
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {/* Row 1: Course Name & Course Code */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -196,6 +214,7 @@ export const AddCourses: React.FC = () => {
                   placeholder="Course Name"
                   value={formData.courseName}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -206,6 +225,7 @@ export const AddCourses: React.FC = () => {
                   placeholder="Course Code"
                   value={formData.courseCode}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -217,6 +237,7 @@ export const AddCourses: React.FC = () => {
                 placeholder="Course Details"
                 value={formData.courseDetails}
                 onChange={handleInputChange}
+                required
                 rows={5}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400 resize-none"
               />
@@ -232,6 +253,7 @@ export const AddCourses: React.FC = () => {
                   onChange={handleInputChange}
                   onClick={handleCalendarToggle}
                   readOnly
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400 cursor-pointer"
                 />
                 <Calendar className="absolute right-0 top-3 w-5 h-5 text-gray-400" />
@@ -294,9 +316,10 @@ export const AddCourses: React.FC = () => {
                 <input
                   type="text"
                   name="courseTimeLength"
-                  placeholder="Course Time Length"
+                  placeholder="Course Time Length (e.g., 8 weeks)"
                   value={formData.courseTimeLength}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -304,11 +327,12 @@ export const AddCourses: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
-                  type="text"
+                  type="number"
                   name="coursePrice"
                   placeholder="Course Price"
                   value={formData.coursePrice}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -348,6 +372,7 @@ export const AddCourses: React.FC = () => {
                   placeholder="Maximum Students"
                   value={formData.maximumStudents}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -358,6 +383,7 @@ export const AddCourses: React.FC = () => {
                   placeholder="Contact Number"
                   value={formData.contactNumber}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
@@ -395,14 +421,20 @@ export const AddCourses: React.FC = () => {
             <div className="flex items-center justify-center space-x-6 pt-8 ">
               <button
                 type="submit"
-                className="px-3 py-2 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium text-sm tracking-wide"
+                disabled={isSubmitting}
+                className={`px-3 py-2 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium text-sm tracking-wide ${
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
-                SUBMIT
+                {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 cursor-pointer focus:ring-red-500 focus:ring-offset-2 font-medium text-sm tracking-wide"
+                disabled={isSubmitting}
+                className={`px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 cursor-pointer focus:ring-red-500 focus:ring-offset-2 font-medium text-sm tracking-wide ${
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
                 CANCEL
               </button>
