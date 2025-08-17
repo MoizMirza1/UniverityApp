@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
+import { createCourse } from '../services';
 
 export const AddCourses: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -129,49 +130,36 @@ export const AddCourses: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
 
-    try {
-      // Prepare form data for API
-      const apiData = new FormData();
-      apiData.append('title', formData.courseName);
-      apiData.append('courseCode', formData.courseCode);
-      apiData.append('description', formData.courseDetails);
-      apiData.append('startDate', new Date(formData.startFrom).toISOString());
-      apiData.append('duration', formData.courseTimeLength);
-      apiData.append('price', formData.coursePrice);
-      apiData.append('professor', formData.professorName);
-      apiData.append('maxStudents', formData.maximumStudents);
-      apiData.append('contactNumber', formData.contactNumber);
-      if (formData.coursePhoto) {
-        apiData.append('image', formData.coursePhoto);
-      }
+     try {
+    const courseData = {
+      title: formData.courseName,
+      courseCode: formData.courseCode,
+      description: formData.courseDetails,
+      startDate: new Date(formData.startFrom).toISOString(), 
+      duration: formData.courseTimeLength,
+      price: Number(formData.coursePrice),
+      professor: formData.professorName,
+      maxStudents: Number(formData.maximumStudents),
+      contactNumber: formData.contactNumber,
+      image: formData.coursePhoto?.name || 'no-photo.jpg', 
+      students: [] 
+    };
 
-      const response = await fetch('http://localhost:8000/api/courses/', {
-        method: 'POST',
-        body: apiData,
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create course');
-      }
-
-      const result = await response.json();
-      console.log('Course created successfully:', result);
+      // Call the API
+      const response = await createCourse(courseData);
       
+      console.log('Course created successfully!' , response);
       // Reset form after successful submission
       handleCancel();
-      alert('Course created successfully!');
     } catch (err) {
-      console.error('Error submitting form:', err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-    } finally {
-      setIsSubmitting(false);
-    }
+      console.error('Error creating course:', err);
+      console.log(err instanceof Error ? err.message : 'Failed to create course');
+    } 
   };
 
   const handleCancel = () => {
@@ -194,7 +182,6 @@ export const AddCourses: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-10xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Header */}
           <div className="flex items-center justify-between px-4 md:px-8 py-6 border-b border-gray-200">
             <h1 className="text-lg md:text-xl font-medium text-gray-900">Course Details</h1>
             <button className="p-1 hover:bg-gray-100 rounded">
@@ -202,7 +189,6 @@ export const AddCourses: React.FC = () => {
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="px-4 md:px-8 py-8 space-y-6 md:space-y-8">
             {error && (
               <div className="bg-red-50 border-l-4 border-red-500 p-4">
@@ -245,7 +231,6 @@ export const AddCourses: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: Course Details */}
             <div>
               <textarea
                 name="courseDetails"
@@ -258,7 +243,6 @@ export const AddCourses: React.FC = () => {
               />
             </div>
 
-            {/* Row 3: Start From & Course Time Length */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div className="relative">
                 <input
@@ -274,10 +258,8 @@ export const AddCourses: React.FC = () => {
                 />
                 <Calendar className="absolute right-0 top-3 w-5 h-5 text-gray-400" />
                 
-                {/* Calendar Dropdown */}
                 {isCalendarOpen && (
                   <div className="absolute z-20 w-72 md:w-80 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 md:p-4">
-                    {/* Calendar Header */}
                     <div className="flex items-center justify-between mb-4">
                       <button
                         type="button"
@@ -298,7 +280,6 @@ export const AddCourses: React.FC = () => {
                       </button>
                     </div>
                     
-                    {/* Calendar Grid */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
                       {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                         <div key={day} className="text-xs text-gray-500 text-center py-1">
@@ -343,8 +324,6 @@ export const AddCourses: React.FC = () => {
                 />
               </div>
             </div>
-
-            {/* Row 4: Course Price & Professor Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -385,7 +364,6 @@ export const AddCourses: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 5: Maximum Students & Contact Number */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -411,7 +389,6 @@ export const AddCourses: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 6: Course Photo */}
             <div>
               <div
                 onDragOver={handleDragOver}
@@ -441,8 +418,7 @@ export const AddCourses: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-center space-x-6 pt-8">
+            <div className="flex items-center justify-center space-x-6 pt-8 ">
               <button
                 type="submit"
                 disabled={isSubmitting}

@@ -4,14 +4,19 @@ export const getCourses = async () => {
   const data = await apiClient("/courses");
   return data.data.courses;
 };
-
 export const createCourse = async (courseData: FormData) => {
-  const data = await apiClient("/courses", {
-    method: "POST",
-    body: courseData,
-  });
-  return data.data.course;
+
+const data = await apiClient("/courses", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",       
+  },
+  body: JSON.stringify(courseData),                 
+});
+
+return data.data.course;
 };
+
 
 export const getCourse = async (id: string) => {
   const data = await apiClient(`/courses/${id}`);
