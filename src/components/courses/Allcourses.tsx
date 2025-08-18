@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Heart, GraduationCap } from "lucide-react";
 import Image from "next/image";
 import { format } from 'date-fns';
-import { getCourses } from "../services";
+import { getCourses, deleteCourse } from "../services";
 import { Course } from "../lib/types/course";
 import Link from 'next/link';
+import { MoreVertical, DeleteIcon } from "../Icons";
 
 interface CourseCardProps {
   _id: string;
@@ -16,6 +17,7 @@ interface CourseCardProps {
   professor: string;
   students: string;
   likes: string;
+  onDelete: (id: string) => void;
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({
@@ -27,9 +29,27 @@ const CourseCard: React.FC<CourseCardProps> = ({
   professor,
   students,
   likes,
+  onDelete,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (!cardRef.current) return;
+      if (!cardRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    if (menuOpen) {
+      document.addEventListener("mousedown", onDocClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+    };
+  }, [menuOpen]);
   return (
-    <div className="bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
+    <div ref={cardRef} className="relative bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
       <div className="relative w-full h-60">
         <Image 
           src={"/images/CourseImg.webp"}
@@ -38,6 +58,31 @@ const CourseCard: React.FC<CourseCardProps> = ({
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+        <button
+          aria-label="More actions"
+          className="absolute top-2 right-2 z-30 p-1 rounded-full bg-white/90 border border-gray-200 shadow transition-colors transition-shadow duration-150 hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:text-gray-800"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((prev) => !prev);
+          }}
+        >
+          <MoreVertical className="w-5 h-5 text-gray-600 transition-colors duration-150 hover:text-gray-800" />
+        </button>
+        {menuOpen && (
+          <div className="absolute top-10 right-2 z-30 bg-white border border-gray-200 rounded-sm shadow-md">
+            <button
+              className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-red-600 transition-colors duration-150 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-400/40"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setMenuOpen(false);
+                onDelete(_id);
+              }}
+            >
+              <DeleteIcon className="w-4 h-4" /> Delete
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col flex-grow p-4">
@@ -95,6 +140,17 @@ export const AllCourses: React.FC = () => {
     fetchCourses();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCourse(id);
+      setCourses((prev) => prev.filter((c) => c._id !== id));
+      alert('Course deleted successfully!');
+    } catch (err) {
+      console.error("Failed to delete course", err);
+      alert("Failed to delete course");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -132,8 +188,9 @@ export const AllCourses: React.FC = () => {
                 date={course.startDate}
                 duration={course.duration}
                 professor={course.professor}
-                students={course.students.length}
+                students={String(course.students)}
                 likes={course.likes}
+                onDelete={handleDelete}
               />
             ))}
           </div>

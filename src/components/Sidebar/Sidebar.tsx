@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   DashboardIcon,
-  ProfessorsIcon,
   CoursesIcon,
   StudentsIcon,
   FacultyIcon,
@@ -19,24 +18,13 @@ import SidebarHeader from "./SidebarHeader";
 const adminNavigation = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
   {
-    name: "Professors",
-    icon: ProfessorsIcon,
-    children: [
-      { name: "All Professors", href: "/admin/professors/allProfessors" },
-      { name: "Add Professors", href: "/admin/professors/addProfessors" },
-      { name: "Add Professors Bootstrap", href: "/admin/professors/add-bootstrap" },
-      { name: "Edit Professors", href: "/admin/professors/editProfessors" },
-      { name: "About Professors", href: "/admin/professors/aboutProfessors"},
-    ]
-  },
-  {
     name: "Courses",
     icon: CoursesIcon,
     children: [
       { name: "All Courses", href: "/admin/courses/allcourses" },
       { name: "Add Courses", href: "/admin/courses/addcourses" },
       { name: "Add Course Bootstrap", href: "/admin/courses/add-bootstrap" },
-      { name: "Edit Course", href: "/admin/courses/edit" },
+      // { name: "Edit Course", href: "/admin/courses/editcourses" },
       // { name: "About Course", href: "/admin/courses/about" },
     ]
   },
