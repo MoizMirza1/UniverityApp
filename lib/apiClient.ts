@@ -30,5 +30,9 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     throw new Error(await res.text());
   }
 
+  if (res.status === 204) {
+    return { data: null } as any;
+  }
+
   return res.json();
 };

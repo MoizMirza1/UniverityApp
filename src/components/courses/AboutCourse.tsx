@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { getCourse,getCourseStudents} from "../services/courseService";
+import Link from 'next/link';
 
 interface CourseDetails {
   _id: string;
@@ -89,6 +90,7 @@ const AboutCourse = () => {
             <h2 className="text-lg font-bold text-gray-800">{course.title}</h2>
           </div>
         </div>
+        
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-bold text-gray-800 mb-4 border-gray-200 md:p-2 border-b-[1px]">About Course</h3>
@@ -131,12 +133,24 @@ const AboutCourse = () => {
               <div className="text-2xl font-bold text-blue-600 mb-1">61</div>
               <div className="text-xs text-gray-500 uppercase tracking-wide">Batches</div>
             </div>
+            
           </div>
         </div>
+        <div className='text-center pt-5 rounded-lg'>
+  <Link 
+    href={`/admin/courses/editcourses/${course._id}`}
+    className="bg-green-600 cursor-pointer text-white text-1xl font-semibold px-20 py-2.5 rounded-lg hover:bg-green-700 transition-colors duration-200"
+  >
+    EDIT COURSE
+  </Link>
+</div>
       </div>
-
+      
+        
+      
       <div className="flex-1 p-4">
         <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 border-t-4 border-[#72bcd4]">
+          
           <div className="mb-8 space-y-4">
             <p className="text-gray-700 leading-relaxed">
               {course.description || "Open after rule place He earth earth good called days unto which wherein day doesn't said day image signs fish days forth for evening whose his make his bearing years gathering good brought without."}
@@ -207,9 +221,11 @@ const AboutCourse = () => {
               )}
             </ul>
           </div>
+         
         </div>
       </div>
     </div>
+    
   );
 }
 
