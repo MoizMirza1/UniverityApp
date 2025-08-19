@@ -47,6 +47,13 @@ export default async function DashboardPage() {
                   </button>
                 </Link>
               )}
+              {session.user?.role === "student" && (
+                <Link href="/student" className="w-full">
+                  <button className="w-full bg-white text-blue-600 py-2 px-4 rounded border border-blue-600 hover:bg-blue-50 transition-colors">
+                    Go to Student Dashboard
+                  </button>
+                </Link>
+              )}
               {/* <Link href="/api/auth/signout" className="w-full">
                 <button className="w-full bg-transparent text-gray-600 py-2 px-4 rounded hover:bg-gray-100 transition-colors">
                   Sign Out
