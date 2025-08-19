@@ -188,7 +188,7 @@ export const AllCourses: React.FC = () => {
                 date={course.startDate}
                 duration={course.duration}
                 professor={course.professor}
-                students={String(course.students)}
+                students={course.students.length}
                 likes={course.likes}
                 onDelete={handleDelete}
               />
