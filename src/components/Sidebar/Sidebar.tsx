@@ -182,7 +182,7 @@ export default function Sidebar() {
             </li>
             <li className="mt-auto">
               <button
-                onClick={() => setShowLogoutModal(true)}
+                onClick={() =>handleLogout()}
                 className="group flex items-center gap-x-3 rounded-md p-2 text-sm font-medium text-gray-700 hover:bg-gray-50 w-full"
               >
                 <LogoutIcon className="h-5 w-5 text-gray-400" />

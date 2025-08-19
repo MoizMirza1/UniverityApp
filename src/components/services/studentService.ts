@@ -1,12 +1,11 @@
 import { apiClient } from "@/lib/apiClient";
 
-// ✅ Get all students
 export const getStudents = async () => {
   const data = await apiClient("/students");
   return data.data.students;
 };
 
-// ✅ Create student (only admin can do this)
+
 export const createStudent = async (studentData: any) => {
   const data = await apiClient("/students", {
     method: "POST",
@@ -19,13 +18,13 @@ export const createStudent = async (studentData: any) => {
   return data.data.student;
 };
 
-// ✅ Get single student by ID
+
 export const getStudent = async (id: string) => {
   const data = await apiClient(`/students/${id}`);
   return data.data.student;
 };
 
-// ✅ Delete student
+
 export const deleteStudent = async (id: string) => {
   const data = await apiClient(`/students/${id}`, {
     method: "DELETE",
@@ -34,13 +33,13 @@ export const deleteStudent = async (id: string) => {
     },
   });
 
-  return data.data.message; // e.g. "Student deleted successfully"
+  return data.data.message; 
 };
 
-// ✅ Update student
+
 export const updateStudent = async (id: string, updatedData: any) => {
   const data = await apiClient(`/students/${id}`, {
-    method: "PUT", // or PATCH if backend supports partial update
+    method: "PUT", 
     headers: {
       "Content-Type": "application/json",
     },
