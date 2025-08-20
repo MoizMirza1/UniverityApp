@@ -36,7 +36,7 @@ const adminNavigation = [
       { name: "All Students", href: "/admin/students/allStudents" },
       { name: "Add Student", href: "/admin/students/addStudents" },
       { name: "Add Student Bootstrap", href: "/admin/students/add-bootstrap" },
-      { name: "Edit Student", href: "/admin/students/editStudents" },
+      // { name: "Edit Student", href: "/admin/students/editStudents" },
       { name: "About Student", href: "/admin/students/aboutStudents"},
     ]},
     {
