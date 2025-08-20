@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
-// import { createStudent } from '../services'; // TODO: Implement API service later
+import { createStudent } from '@/components/services/studentService';
 
 export const AddStudents: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -31,17 +31,9 @@ export const AddStudents: React.FC = () => {
 
   const departments = [
     'Computer Science',
-    'Mathematics',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'Engineering',
-    'Business',
-    'Arts',
-    'Literature',
-    'History',
-    'Economics',
-    'Psychology'
+    'Software',
+    'AI',
+    'Cyber Security'
   ];
 
   const genders = [
@@ -73,6 +65,8 @@ export const AddStudents: React.FC = () => {
     }));
     setIsGenderDropdownOpen(false);
   };
+
+  // Department is sent as-is to match backend enum values
 
   const handleRegistrationDateSelect = (date: Date) => {
     const year = date.getFullYear();
@@ -167,27 +161,23 @@ export const AddStudents: React.FC = () => {
     setError(null);
 
     try {
-      // TODO: Implement API call later
       const studentData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        rollNo: formData.rollNo,
+        rollNumber: formData.rollNo,
         email: formData.email,
-        registrationDate: new Date(formData.registrationDate).toISOString(),
+        admissionDate: new Date(formData.registrationDate).toISOString(),
         department: formData.department,
         gender: formData.gender,
         mobileNumber: formData.mobileNumber,
-        parentsName: formData.parentsName,
-        parentsMobileNumber: formData.parentsMobileNumber,
+        parentName: formData.parentsName,
+        parentNumber: formData.parentsMobileNumber,
         address: formData.address,
-        photo: formData.studentPhoto?.name || 'no-photo.jpg'
       };
 
-      // TODO: Uncomment when API service is implemented
-      // const response = await createStudent(studentData);
-      // console.log('Student created successfully!', response);
+      const response = await createStudent(studentData);
+      console.log('Student created successfully!', response);
       
-      console.log('Student data ready for API:', studentData);
       
       // Reset form after successful submission
       handleCancel();
