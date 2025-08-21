@@ -50,17 +50,6 @@ const adminNavigation = [
         { name: "About Professor", href: "/admin/professors/aboutProfessors"},
       ]
   },
-  {
-      name: "Professors",
-      icon: ProfessorsIcon,
-      children: [
-        { name: "All Professors", href: "/admin/professors/allProfessors" },
-        { name: "Add Professor", href: "/admin/professors/addProfessors" },
-        { name: "Add Professor Bootstrap", href: "/admin/professors/add-bootstrap" },
-        { name: "Edit Professor", href: "/admin/professors/editProfessors" },
-        { name: "About Professor", href: "/admin/professors/aboutProfessors"},
-      ]
-  },
    {
     name: "Departments",
     icon: StudentsIcon,

@@ -91,7 +91,7 @@ const departments: Department[] = [
 ];
 
 const AboutDepartments: React.FC = () => {
-  const [selectedDept, setSelectedDept] = useState<Department | null>(null);
+  const [selectedDept, setSelectedDept] = useState<Department | null>(departments[0]);
 
   return (
     <div className="flex flex-col lg:flex-row w-full p-6 space-y-6 lg:space-y-0 lg:space-x-6">
@@ -104,7 +104,7 @@ const AboutDepartments: React.FC = () => {
               <li
                 key={dept.id}
                 onClick={() => setSelectedDept(dept)}
-                className="cursor-pointer p-2 rounded-lg hover:bg-green-100 transition"
+                className={`cursor-pointer p-2 rounded-lg transition ${selectedDept?.id === dept.id ? 'bg-green-100 text-green-800 font-semibold' : 'hover:bg-green-50 text-gray-700'}`}
               >
                 {dept.name}
               </li>
