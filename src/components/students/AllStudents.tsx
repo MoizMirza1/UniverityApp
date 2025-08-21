@@ -1,73 +1,72 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EditIcon, DeleteIcon } from '../Icons';
+import { getStudents } from '@/components/services/studentService';
 
 const AllStudents = () => {
   const [viewMode, setViewMode] = useState('list');
   const [entries, setEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [students, setStudents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Sample data for 50 students
-    const students = [
-    { id: 1, rollNo: 'CS-101', name: 'Johnathan Williams', department: 'Computer Science', mobile: '(123) 456-7890', email: 'john.w@university.edu', admissionDate: 'Jan 15, 2023' },
-    { id: 2, rollNo: 'EE-205', name: 'Sarah Johnson', department: 'Electrical Engineering', mobile: '(987) 654-3210', email: 'sarah.j@university.edu', admissionDate: 'Feb 20, 2023' },
-    { id: 3, rollNo: 'ME-312', name: 'Robert Chen', department: 'Mechanical Engineering', mobile: '(555) 123-4567', email: 'robert.c@university.edu', admissionDate: 'Mar 5, 2023' },
-    { id: 4, rollNo: 'BT-418', name: 'Emily Rodriguez', department: 'Biotechnology', mobile: '(444) 789-1234', email: 'emily.r@university.edu', admissionDate: 'Apr 10, 2023' },
-    { id: 5, rollNo: 'AR-127', name: 'Michael Brown', department: 'Architecture', mobile: '(333) 456-7890', email: 'michael.b@university.edu', admissionDate: 'May 22, 2023' },
-    { id: 6, rollNo: 'CS-102', name: 'David Wilson', department: 'Computer Science', mobile: '(222) 333-4444', email: 'david.w@university.edu', admissionDate: 'Jun 7, 2023' },
-    { id: 7, rollNo: 'EE-206', name: 'Jennifer Lee', department: 'Electrical Engineering', mobile: '(111) 222-3333', email: 'jennifer.l@university.edu', admissionDate: 'Jul 15, 2023' },
-    { id: 8, rollNo: 'ME-313', name: 'Daniel Kim', department: 'Mechanical Engineering', mobile: '(999) 888-7777', email: 'daniel.k@university.edu', admissionDate: 'Aug 3, 2023' },
-    { id: 9, rollNo: 'BT-419', name: 'Sophia Martinez', department: 'Biotechnology', mobile: '(777) 666-5555', email: 'sophia.m@university.edu', admissionDate: 'Sep 18, 2023' },
-    { id: 10, rollNo: 'AR-128', name: 'William Taylor', department: 'Architecture', mobile: '(555) 444-3333', email: 'william.t@university.edu', admissionDate: 'Oct 5, 2023' },
-    { id: 11, rollNo: 'CS-103', name: 'Olivia Anderson', department: 'Computer Science', mobile: '(333) 222-1111', email: 'olivia.a@university.edu', admissionDate: 'Nov 12, 2023' },
-    { id: 12, rollNo: 'EE-207', name: 'James Thomas', department: 'Electrical Engineering', mobile: '(111) 999-8888', email: 'james.t@university.edu', admissionDate: 'Dec 1, 2023' },
-    { id: 13, rollNo: 'ME-314', name: 'Emma Jackson', department: 'Mechanical Engineering', mobile: '(888) 777-6666', email: 'emma.j@university.edu', admissionDate: 'Jan 9, 2024' },
-    { id: 14, rollNo: 'BT-420', name: 'Alexander White', department: 'Biotechnology', mobile: '(666) 555-4444', email: 'alexander.w@university.edu', admissionDate: 'Feb 14, 2024' },
-    { id: 15, rollNo: 'AR-129', name: 'Ava Harris', department: 'Architecture', mobile: '(444) 333-2222', email: 'ava.h@university.edu', admissionDate: 'Mar 21, 2024' },
-    { id: 16, rollNo: 'CS-104', name: 'Noah Martin', department: 'Computer Science', mobile: '(222) 111-0000', email: 'noah.m@university.edu', admissionDate: 'Apr 3, 2024' },
-    { id: 17, rollNo: 'EE-208', name: 'Isabella Thompson', department: 'Electrical Engineering', mobile: '(000) 999-8888', email: 'isabella.t@university.edu', admissionDate: 'May 17, 2024' },
-    { id: 18, rollNo: 'ME-315', name: 'Liam Garcia', department: 'Mechanical Engineering', mobile: '(999) 888-7777', email: 'liam.g@university.edu', admissionDate: 'Jun 5, 2024' },
-    { id: 19, rollNo: 'BT-421', name: 'Mia Martinez', department: 'Biotechnology', mobile: '(777) 666-5555', email: 'mia.m@university.edu', admissionDate: 'Jul 11, 2024' },
-    { id: 20, rollNo: 'AR-130', name: 'Benjamin Robinson', department: 'Architecture', mobile: '(555) 444-3333', email: 'benjamin.r@university.edu', admissionDate: 'Aug 22, 2024' },
-    { id: 21, rollNo: 'CS-105', name: 'Charlotte Clark', department: 'Computer Science', mobile: '(333) 222-1111', email: 'charlotte.c@university.edu', admissionDate: 'Sep 8, 2024' },
-    { id: 22, rollNo: 'EE-209', name: 'Elijah Rodriguez', department: 'Electrical Engineering', mobile: '(111) 999-8888', email: 'elijah.r@university.edu', admissionDate: 'Oct 15, 2024' },
-    { id: 23, rollNo: 'ME-316', name: 'Amelia Lewis', department: 'Mechanical Engineering', mobile: '(888) 777-6666', email: 'amelia.l@university.edu', admissionDate: 'Nov 2, 2024' },
-    { id: 24, rollNo: 'BT-422', name: 'Lucas Lee', department: 'Biotechnology', mobile: '(666) 555-4444', email: 'lucas.l@university.edu', admissionDate: 'Dec 9, 2024' },
-    { id: 25, rollNo: 'AR-131', name: 'Harper Walker', department: 'Architecture', mobile: '(444) 333-2222', email: 'harper.w@university.edu', admissionDate: 'Jan 16, 2025' },
-    { id: 26, rollNo: 'CS-106', name: 'Mason Hall', department: 'Computer Science', mobile: '(222) 111-0000', email: 'mason.h@university.edu', admissionDate: 'Feb 3, 2025' },
-    { id: 27, rollNo: 'EE-210', name: 'Evelyn Young', department: 'Electrical Engineering', mobile: '(000) 999-8888', email: 'evelyn.y@university.edu', admissionDate: 'Mar 12, 2025' },
-    { id: 28, rollNo: 'ME-317', name: 'Logan Hernandez', department: 'Mechanical Engineering', mobile: '(999) 888-7777', email: 'logan.h@university.edu', admissionDate: 'Apr 7, 2025' },
-    { id: 29, rollNo: 'BT-423', name: 'Abigail King', department: 'Biotechnology', mobile: '(777) 666-5555', email: 'abigail.k@university.edu', admissionDate: 'May 19, 2025' },
-    { id: 30, rollNo: 'AR-132', name: 'Jacob Wright', department: 'Architecture', mobile: '(555) 444-3333', email: 'jacob.w@university.edu', admissionDate: 'Jun 4, 2025' },
-    { id: 31, rollNo: 'CS-107', name: 'Emily Lopez', department: 'Computer Science', mobile: '(333) 222-1111', email: 'emily.l@university.edu', admissionDate: 'Jul 11, 2025' },
-    { id: 32, rollNo: 'EE-211', name: 'Michael Hill', department: 'Electrical Engineering', mobile: '(111) 999-8888', email: 'michael.h@university.edu', admissionDate: 'Aug 22, 2025' },
-    { id: 33, rollNo: 'ME-318', name: 'Elizabeth Scott', department: 'Mechanical Engineering', mobile: '(888) 777-6666', email: 'elizabeth.s@university.edu', admissionDate: 'Sep 5, 2025' },
-    { id: 34, rollNo: 'BT-424', name: 'Daniel Green', department: 'Biotechnology', mobile: '(666) 555-4444', email: 'daniel.g@university.edu', admissionDate: 'Oct 14, 2025' },
-    { id: 35, rollNo: 'AR-133', name: 'Avery Adams', department: 'Architecture', mobile: '(444) 333-2222', email: 'avery.a@university.edu', admissionDate: 'Nov 1, 2025' },
-    { id: 36, rollNo: 'CS-108', name: 'Sofia Baker', department: 'Computer Science', mobile: '(222) 111-0000', email: 'sofia.b@university.edu', admissionDate: 'Dec 8, 2025' },
-    { id: 37, rollNo: 'EE-212', name: 'Matthew Nelson', department: 'Electrical Engineering', mobile: '(000) 999-8888', email: 'matthew.n@university.edu', admissionDate: 'Jan 15, 2026' },
-    { id: 38, rollNo: 'ME-319', name: 'Victoria Carter', department: 'Mechanical Engineering', mobile: '(999) 888-7777', email: 'victoria.c@university.edu', admissionDate: 'Feb 2, 2026' },
-    { id: 39, rollNo: 'BT-425', name: 'David Mitchell', department: 'Biotechnology', mobile: '(777) 666-5555', email: 'david.m@university.edu', admissionDate: 'Mar 9, 2026' },
-    { id: 40, rollNo: 'AR-134', name: 'Scarlett Perez', department: 'Architecture', mobile: '(555) 444-3333', email: 'scarlett.p@university.edu', admissionDate: 'Apr 16, 2026' },
-    { id: 41, rollNo: 'CS-109', name: 'Joseph Roberts', department: 'Computer Science', mobile: '(333) 222-1111', email: 'joseph.r@university.edu', admissionDate: 'May 3, 2026' },
-    { id: 42, rollNo: 'EE-213', name: 'Madison Turner', department: 'Electrical Engineering', mobile: '(111) 999-8888', email: 'madison.t@university.edu', admissionDate: 'Jun 10, 2026' },
-    { id: 43, rollNo: 'ME-320', name: 'Jackson Phillips', department: 'Mechanical Engineering', mobile: '(888) 777-6666', email: 'jackson.p@university.edu', admissionDate: 'Jul 17, 2026' },
-    { id: 44, rollNo: 'BT-426', name: 'Lily Campbell', department: 'Biotechnology', mobile: '(666) 555-4444', email: 'lily.c@university.edu', admissionDate: 'Aug 4, 2026' },
-    { id: 45, rollNo: 'AR-135', name: 'Samuel Parker', department: 'Architecture', mobile: '(444) 333-2222', email: 'samuel.p@university.edu', admissionDate: 'Sep 11, 2026' },
-    { id: 46, rollNo: 'CS-110', name: 'Chloe Evans', department: 'Computer Science', mobile: '(222) 111-0000', email: 'chloe.e@university.edu', admissionDate: 'Oct 18, 2026' },
-    { id: 47, rollNo: 'EE-214', name: 'Ryan Edwards', department: 'Electrical Engineering', mobile: '(000) 999-8888', email: 'ryan.e@university.edu', admissionDate: 'Nov 5, 2026' },
-    { id: 48, rollNo: 'ME-321', name: 'Zoey Collins', department: 'Mechanical Engineering', mobile: '(999) 888-7777', email: 'zoey.c@university.edu', admissionDate: 'Dec 12, 2026' },
-    { id: 49, rollNo: 'BT-427', name: 'Nathan Stewart', department: 'Biotechnology', mobile: '(777) 666-5555', email: 'nathan.s@university.edu', admissionDate: 'Jan 19, 2027' },
-    { id: 50, rollNo: 'AR-136', name: 'Hannah Sanchez', department: 'Architecture', mobile: '(555) 444-3333', email: 'hannah.s@university.edu', admissionDate: 'Feb 6, 2027' }
-  ];
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getStudents();
+        setStudents(Array.isArray(data) ? data : []);
+      } catch (err: any) {
+        setError(err?.message || 'Failed to load students');
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
 
   const totalStudents = students.length;
   const totalPages = Math.ceil(totalStudents / entries);
   const startIndex = (currentPage - 1) * entries;
   const endIndex = Math.min(startIndex + entries, totalStudents);
   const displayedStudents = students.slice(startIndex, endIndex);
+
+  const normalizedDisplayed = displayedStudents.map((s: any, idx: number) => {
+    const addr = s.address ?? {} as any;
+    let addressLine1 = '';
+    let addressLine2 = '';
+    if (typeof addr === 'string') {
+      addressLine1 = addr;
+    } else if (addr && typeof addr === 'object') {
+      const line1 = addr.line1 ?? addr.street ?? addr.addressLine1 ?? addr.address ?? '';
+      const city = addr.city ?? '';
+      const state = addr.state ?? addr.province ?? '';
+      const country = addr.country ?? '';
+      const zip = addr.zip ?? addr.postalCode ?? '';
+      addressLine1 = [line1, zip].filter(Boolean).join(' ');
+      addressLine2 = [city, state, country].filter(Boolean).join(', ');
+      if (!addressLine1 && addr.full) addressLine1 = addr.full;
+    }
+    return {
+      key: s._id ?? s.id ?? idx,
+      rollNo: s.rollNumber ?? s.rollNo ?? '',
+      name: (s.name ?? `${s.firstName ?? ''} ${s.lastName ?? ''}`).trim(),
+      department: s.department ?? '',
+      mobile: s.mobileNumber ?? s.mobile ?? '',
+      email: s.email ?? '',
+      admissionDate: s.admissionDate
+        ? new Date(s.admissionDate).toLocaleDateString()
+        : (s.registrationDate ? new Date(s.registrationDate).toLocaleDateString() : ''),
+      addressLine1,
+      addressLine2,
+    };
+  });
 
   const handleEntriesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEntries(Number(e.target.value));
@@ -154,15 +153,15 @@ const AllStudents = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {displayedStudents.map((student, index) => (
+                {normalizedDisplayed.map((student, index) => (
                   <tr 
-                    key={student.id} 
+                    key={student.key} 
                     className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
                   >
                     <td className="flex justify-center py-1 sm:py-2">
                       <Image 
-                        src={`https://i.pravatar.cc/40?img=${student.id}`} 
-                        alt={student.name} 
+                        src={`https://i.pravatar.cc/40?img=${index + 1}`} 
+                        alt={student.name || 'Student'} 
                         width={32}
                         height={32}
                         className="rounded-full" 
@@ -175,7 +174,7 @@ const AllStudents = () => {
                     <td className="hidden sm:table-cell px-6 py-2 whitespace-nowrap text-sm text-gray-700 border-r border-gray-200">{student.department}</td>
                     <td className="hidden md:table-cell px-6 py-2 whitespace-nowrap text-sm text-gray-700 border-r border-gray-200">
                       <a 
-                        href={`tel:${student.mobile.replace(/[^\d+]/g, '')}`} 
+                        href={`tel:${(student.mobile || '').replace(/[^\d+]/g, '')}`} 
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         {student.mobile}
@@ -210,13 +209,13 @@ const AllStudents = () => {
         {/* Grid View - Responsive Columns */}
         {viewMode === 'grid' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {displayedStudents.map((student) => (
-              <div key={student.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-3 sm:p-4 hover:shadow-md transition-shadow text-center flex flex-col h-full">
+            {normalizedDisplayed.map((student, idx) => (
+              <div key={student.key} className="bg-white border border-gray-200 rounded-lg shadow-sm p-3 sm:p-4 hover:shadow-md transition-shadow text-center flex flex-col h-full">
                 {/* Student Image */}
                 <div className="flex justify-center mb-2 sm:mb-3">
                   <Image 
-                    src={`https://i.pravatar.cc/150?img=${student.id}`} 
-                    alt={student.name} 
+                    src={`https://i.pravatar.cc/150?img=${idx + 1}`} 
+                    alt={student.name || 'Student'} 
                     width={80}
                     height={80}
                     className="rounded-full object-cover border-4 border-pink-100"
@@ -229,14 +228,18 @@ const AllStudents = () => {
                   <p className="text-gray-600 text-xs sm:text-sm mb-2">{student.department}</p>
                   
                   <div className="text-xs text-gray-600 mb-2 sm:mb-3">
-                    <p className="mb-1">123 University Avenue</p>
-                    <p className="mb-1 sm:mb-2">United States</p>
+                    {student.addressLine1 && (
+                      <p className="mb-1">{student.addressLine1}</p>
+                    )}
+                    {student.addressLine2 && (
+                      <p className="mb-1 sm:mb-2">{student.addressLine2}</p>
+                    )}
                   </div>
                   
                   <div className="mt-auto">
                     <p className="mb-1">
                       <a 
-                        href={`tel:${student.mobile.replace(/[^\d+]/g, '')}`} 
+                        href={`tel:${(student.mobile || '').replace(/[^\d+]/g, '')}`} 
                         className="text-blue-600 hover:text-blue-800 hover:underline text-xs sm:text-sm"
                       >
                         {student.mobile}
