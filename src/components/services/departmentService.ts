@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/apiClient";
 
-// Get all departments
+
 export const getDepartments = async () => {
   const data = await apiClient("/departments");
   return data.data.departments;
@@ -26,13 +26,13 @@ export const createDepartment = async (departmentData: CreateDepartmentPayload) 
   return data.data?.department ?? data.data;
 };
 
-// Get a single department
+
 export const getDepartment = async (id: string) => {
   const data = await apiClient(`/departments/${id}`);
   return data.data.department;
 };
 
-// Update department
+
 export const updateDepartment = async (id: string, updatedData: { name?: string; code?: string }) => {
   const data = await apiClient(`/departments/${id}`, {
     method: "PUT",
@@ -44,7 +44,6 @@ export const updateDepartment = async (id: string, updatedData: { name?: string;
   return data.data.department;
 };
 
-// Delete department
 export const deleteDepartment = async (id: string) => {
   const data = await apiClient(`/departments/${id}`, {
     method: "DELETE",
