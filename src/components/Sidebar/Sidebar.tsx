@@ -8,7 +8,8 @@ import {
   StudentsIcon,
   FacultyIcon,
   SettingsIcon,
-  LogoutIcon
+  LogoutIcon,
+  ProfessorsIcon
 } from "../Icons";
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
@@ -37,6 +38,28 @@ const adminNavigation = [
       { name: "Add Student Bootstrap", href: "/admin/students/add-bootstrap" },
       { name: "Edit Student", href: "/admin/students/editStudents" },
       { name: "About Student", href: "/admin/students/aboutStudents"},
+    ]
+  },
+  {
+      name: "Professors",
+      icon: ProfessorsIcon,
+      children: [
+        { name: "All Professors", href: "/admin/professors/allProfessors" },
+        { name: "Add Professor", href: "/admin/professors/addProfessors" },
+        { name: "Add Professor Bootstrap", href: "/admin/professors/add-bootstrap" },
+        { name: "Edit Professor", href: "/admin/professors/editProfessors" },
+        { name: "About Professor", href: "/admin/professors/aboutProfessors"},
+      ]
+  },
+   {
+    name: "Departments",
+    icon: StudentsIcon,
+    children: [
+      { name: "All Departments", href: "/admin/deparments/allDepartments" },
+      { name: "Add Departments", href: "/admin/departments/addDepartments" },
+      { name: "Add Departments Bootstrap", href: "/admin/departments/add-bootstrap" },
+      { name: "Edit Departments", href: "/admin/departments/editDepartments" },
+      { name: "About Departments", href: "/admin/departments/aboutDepartments"},
     ]
   },
   { name: "Faculty", href: "/admin/faculty", icon: FacultyIcon },
