@@ -70,6 +70,9 @@ export const EditStudents: React.FC = () => {
   const [currentRegistrationDate, setCurrentRegistrationDate] = useState<Date>(new Date());
   const [isDragOver, setIsDragOver] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [rollPrefix, setRollPrefix] = useState<string>('');
+  const [rollSerial, setRollSerial] = useState<string>('');
+  const [rollYear, setRollYear] = useState<string>('2025');
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -106,6 +109,27 @@ export const EditStudents: React.FC = () => {
         };
         setFormData(data);
         setOriginalData(data);
+        // parse existing roll number, prefer CODE-SSS-YYYY then fallback CODE|SSS|YY
+        const rn = (data.rollNumber || '').toUpperCase().replace(/\s+/g, '');
+        let prefix = '';
+        let serial = '';
+        let year = '2025';
+        const hy = rn.match(/^([A-Z]{1,4})-([0-9]{1,3})-([0-9]{4})$/);
+        if (hy) {
+          prefix = hy[1];
+          serial = hy[2];
+          year = hy[3];
+        } else {
+          const old = rn.match(/^([A-Z]{1,4})[\|\-_:]*([0-9]{1,3})[\|\-_:]*([0-9]{2})$/);
+          if (old) {
+            prefix = old[1];
+            serial = old[2];
+            year = `20${old[3]}`;
+          }
+        }
+        setRollPrefix(prefix);
+        setRollSerial(serial);
+        setRollYear(year);
       } catch {
         setError('Failed to load student');
       } finally {
@@ -163,6 +187,19 @@ export const EditStudents: React.FC = () => {
       } catch {}
     }
     return changed;
+  };
+
+  const buildRollNo = (prefix: string, serial: string, year: string) => {
+    if (!prefix || !serial || !year) return '';
+    const paddedSerial = serial.replace(/\D/g, '').slice(0, 3).padStart(3, '0');
+    const yy = year.replace(/\D/g, '');
+    const normalizedYear = yy.length === 2 ? `20${yy}` : yy.slice(-4).padStart(4, '0');
+    return `${prefix.toUpperCase()}-${paddedSerial}-${normalizedYear}`;
+  };
+
+  const updateRollNo = (nextPrefix: string, nextSerial: string, nextYear: string) => {
+    const combined = buildRollNo(nextPrefix, nextSerial, nextYear);
+    setFormData(prev => ({ ...prev, rollNumber: combined }));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -238,14 +275,56 @@ export const EditStudents: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              <input
-                type="text"
-                name="rollNumber"
-                placeholder="Roll Number"
-                value={formData.rollNumber}
-                onChange={handleInputChange}
-                className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
-              />
+              <div>
+                <div className="flex items-center gap-3">
+                  <div className="min-w-[80px]">
+                    <select
+                      value={rollPrefix}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setRollPrefix(val);
+                        updateRollNo(val, rollSerial, rollYear);
+                      }}
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
+                    >
+                      <option value="" disabled>Code</option>
+                      {['CS','IT','SE'].map((rp) => (
+                        <option key={rp} value={rp}>{rp}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <span className="text-gray-400">-</span>
+                  <div className="min-w-[72px]">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="001"
+                      value={rollSerial}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 3);
+                        setRollSerial(digits);
+                        updateRollNo(rollPrefix, digits, rollYear);
+                      }}
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
+                    />
+                  </div>
+                  <span className="text-gray-400">-</span>
+                  <div className="min-w-[56px]">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="2025"
+                      value={rollYear}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(-4);
+                        setRollYear(digits);
+                        updateRollNo(rollPrefix, rollSerial, digits);
+                      }}
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
               <input
                 type="email"
                 name="email"

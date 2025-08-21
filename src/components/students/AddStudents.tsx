@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { createStudent } from '@/components/services/studentService';
+import { getStudents } from '@/components/services/studentService';
 
 export const AddStudents: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -28,6 +29,9 @@ export const AddStudents: React.FC = () => {
   const [currentRegistrationDate, setCurrentRegistrationDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rollPrefix, setRollPrefix] = useState<string>('');
+  const [rollSerial, setRollSerial] = useState<string>('');
+  const [rollYear, setRollYear] = useState<string>('2025');
 
   const departments = [
     'Computer Science',
@@ -41,6 +45,92 @@ export const AddStudents: React.FC = () => {
     'Female',
     'Other'
   ];
+
+  const departmentToCode: Record<string, string> = {
+    'Computer Science': 'CS',
+    'Software': 'SE',
+    'AI': 'AI',
+    'Cyber Security': 'IT'
+  };
+
+  const rollPrefixes = [
+    'CS',
+    'IT',
+    'SE',
+    'AI'
+  ];
+
+  const buildRollNo = (prefix: string, serial: string, year: string) => {
+    if (!prefix || !serial || !year) return '';
+    const paddedSerial = serial.replace(/\D/g, '').slice(0, 3).padStart(3, '0');
+    const yy = year.replace(/\D/g, '');
+    const normalizedYear = yy.length === 2 ? `20${yy}` : yy.slice(-4).padStart(4, '0');
+    return `${prefix.toUpperCase()}-${paddedSerial}-${normalizedYear}`;
+  };
+
+  const updateRollNo = (nextPrefix: string, nextSerial: string, nextYear: string) => {
+    const combined = buildRollNo(nextPrefix, nextSerial, nextYear);
+    setFormData(prev => ({
+      ...prev,
+      rollNo: combined
+    }));
+  };
+
+  const computeNextSerial = async (prefix: string, year: string) => {
+    type Student = { rollNumber?: string; rollNo?: string };
+    type Parsed = { code: string; serial: number; yr: string } | null;
+    try {
+      const students: Student[] = await getStudents();
+      const allRns = (students || [])
+        .map(s => (s?.rollNumber || s?.rollNo || '') as string)
+        .map(rn => (typeof rn === 'string' ? rn : ''))
+        .filter(rn => rn)
+        .map(rn => rn.replace(/\s+/g, ''))
+        .map(rn => rn.toUpperCase());
+
+      const targetYear = year.replace(/\D/g, '').length === 2 ? `20${year.replace(/\D/g, '')}` : year.replace(/\D/g, '').slice(-4);
+
+      const parsed = allRns
+        .map<Parsed>(rn => {
+          // New format: CODE-SSS-YYYY
+          const hy = rn.match(/^([A-Z]{1,4})-([0-9]{1,3})-([0-9]{4})$/);
+          if (hy) return { code: hy[1], serial: parseInt(hy[2], 10), yr: hy[3] };
+          // Old format tolerant: CODE|SSS|YY
+          const old = rn.match(/^([A-Z]{1,4})[\|\-_:]*([0-9]{1,3})[\|\-_:]*([0-9]{2})$/);
+          if (old) return { code: old[1], serial: parseInt(old[2], 10), yr: `20${old[3]}` };
+          return null;
+        })
+        .filter((m): m is Exclude<Parsed, null> => Boolean(m));
+
+      const used = new Set<number>(
+        parsed
+          .filter(m => m.code === prefix.toUpperCase() && m.yr === targetYear)
+          .map(m => m.serial)
+          .filter(n => Number.isInteger(n) && n >= 1 && n <= 50)
+      );
+
+      let assigned: number | null = null;
+      for (let i = 1; i <= 50; i++) {
+        if (!used.has(i)) { assigned = i; break; }
+      }
+
+      if (assigned === null) {
+        setError('No available roll numbers for the selected code (limit 50).');
+        setRollSerial('');
+        updateRollNo(prefix, '', targetYear);
+        return;
+      }
+
+      const nextSerialNumber = String(assigned).padStart(3, '0');
+      setRollSerial(nextSerialNumber);
+      setError(null);
+      updateRollNo(prefix, nextSerialNumber, targetYear);
+    } catch {
+      setError('Failed to fetch existing students to assign roll number');
+      setRollSerial('');
+      updateRollNo(prefix, '', year);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -56,6 +146,12 @@ export const AddStudents: React.FC = () => {
       department: selectedDepartment
     }));
     setIsDepartmentDropdownOpen(false);
+
+    const code = departmentToCode[selectedDepartment];
+    if (code) {
+      setRollPrefix(code);
+      computeNextSerial(code, rollYear);
+    }
   };
 
   const handleGenderSelect = (selectedGender: string) => {
@@ -161,6 +257,11 @@ export const AddStudents: React.FC = () => {
     setError(null);
 
     try {
+      if (!formData.rollNo) {
+        setError('Roll Number is required in the format CS-001-2025');
+        setIsSubmitting(false);
+        return;
+      }
       const studentData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -205,6 +306,9 @@ export const AddStudents: React.FC = () => {
       studentPhoto: null
     });
     setError(null);
+    setRollPrefix('');
+    setRollSerial('');
+    setRollYear('2025');
   };
 
   const renderCalendar = (
@@ -327,15 +431,47 @@ export const AddStudents: React.FC = () => {
             {/* Row 2: Roll No & Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
-                <input
-                  type="text"
-                  name="rollNo"
-                  placeholder="Roll No"
-                  value={formData.rollNo}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
-                />
+                <div className="flex items-center gap-3">
+                  <div className="min-w-[80px]">
+                    <select
+                      value={rollPrefix}
+                      disabled
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                      aria-disabled="true"
+                    >
+                      <option value="" disabled>
+                        Code
+                      </option>
+                      {rollPrefixes.map((rp) => (
+                        <option key={rp} value={rp}>{rp}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <span className="text-gray-400">-</span>
+                  <div className="min-w-[72px]">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="001"
+                      value={rollSerial}
+                      readOnly
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
+                  <span className="text-gray-400">-</span>
+                  <div className="min-w-[56px]">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="2025"
+                      value={rollYear}
+                      readOnly
+                      disabled
+                      className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
+                </div>
+                <input type="hidden" name="rollNo" value={formData.rollNo} />
               </div>
               <div>
                 <input
