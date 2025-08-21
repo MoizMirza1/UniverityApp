@@ -10,6 +10,9 @@ export const AddStudents: React.FC = () => {
     firstName: '',
     lastName: '',
     rollNo: '',
+    rollCourse: '',
+    rollNumberPart: '',
+    rollYearPart: '',
     email: '',
     registrationDate: '',
     department: '',
@@ -47,6 +50,20 @@ export const AddStudents: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const composeRollNo = (course: string, numberPart: string, yearPart: string) => {
+    const paddedNumber = numberPart ? numberPart.padStart(3, '0') : '';
+    const paddedYear = yearPart ? yearPart.padStart(2, '0') : '';
+    const parts = [course, paddedNumber, paddedYear].filter(Boolean);
+    const composed = parts.join(' | ');
+    setFormData(prev => ({
+      ...prev,
+      rollCourse: course,
+      rollNumberPart: numberPart,
+      rollYearPart: yearPart,
+      rollNo: composed
     }));
   };
 
@@ -194,6 +211,9 @@ export const AddStudents: React.FC = () => {
       firstName: '',
       lastName: '',
       rollNo: '',
+      rollCourse: '',
+      rollNumberPart: '',
+      rollYearPart: '',
       email: '',
       registrationDate: '',
       department: '',
@@ -324,18 +344,49 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: Roll No & Email */}
+            {/* Row 2: Roll No (segmented) & Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
-                <input
-                  type="text"
-                  name="rollNo"
-                  placeholder="Roll No"
-                  value={formData.rollNo}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
-                />
+                <div className="flex items-center gap-2">
+                  <select
+                    name="rollCourse"
+                    value={formData.rollCourse}
+                    onChange={(e) => composeRollNo(e.target.value, formData.rollNumberPart, formData.rollYearPart)}
+                    required
+                    className="w-24 px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 "
+                  >
+                    <option value="" disabled hidden className="text-gray-400">Course</option>
+                    <option value="CS">CS</option>
+                    <option value="AI">AI</option>
+                    <option value="Software">Software</option>
+                  </select>
+                  <span className="text-gray-400">|</span>
+                  <input
+                    type="text"
+                    name="rollNumberPart"
+                    inputMode="numeric"
+                    pattern="\d{1,3}"
+                    maxLength={3}
+                    placeholder="Roll No"
+                    value={formData.rollNumberPart}
+                    onChange={(e) => composeRollNo(formData.rollCourse, e.target.value.replace(/[^0-9]/g, ''), formData.rollYearPart)}
+                    required
+                    className="w-20 px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                  />
+                  <span className="text-gray-400">|</span>
+                  <input
+                    type="text"
+                    name="rollYearPart"
+                    inputMode="numeric"
+                    pattern="\d{2}"
+                    maxLength={2}
+                    placeholder="Year"
+                    value={formData.rollYearPart}
+                    onChange={(e) => composeRollNo(formData.rollCourse, formData.rollNumberPart, e.target.value.replace(/[^0-9]/g, ''))}
+                    required
+                    className="w-16 px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                  />
+                </div>
               </div>
               <div>
                 <input

@@ -7,17 +7,6 @@ const AddDepartment = () => {
       {/* Page Title */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Add Department</h1>
 
-      {/* Breadcrumb */}
-      <div className="flex items-center text-sm text-gray-600 mb-6">
-        <span className="flex items-center">
-          <span className="mr-2">🏠</span> Home
-        </span>
-        <span className="mx-2">{">"}</span>
-        <span>Department</span>
-        <span className="mx-2">{">"}</span>
-        <span className="text-gray-800 font-medium">Add Department</span>
-      </div>
-
       {/* Card */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-lg font-semibold border-b border-dashed pb-3 mb-6">
@@ -27,46 +16,38 @@ const AddDepartment = () => {
         {/* Form */}
         <form className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* Department Name */}
             <div>
-              <label className="block text-gray-600 text-sm mb-2">
-                Department Name
-              </label>
               <input
                 type="text"
+                placeholder="Department Name"
+                className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
+              />
+            </div>
+
+            <div>
+              <input
+                type="text"
+                placeholder="Department Code"
                 className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
               />
             </div>
 
             {/* Head of Department */}
             <div>
-              <label className="block text-gray-600 text-sm mb-2">
-                Head Of Department
-              </label>
               <input
                 type="text"
-                className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
-              />
-            </div>
-
-            {/* Department Start Date */}
-            <div>
-              <label className="block text-gray-600 text-sm mb-2">
-                Department Start Date
-              </label>
-              <input
-                type="date"
+                placeholder="Head of Department"
                 className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
               />
             </div>
 
             {/* Student Capacity */}
             <div>
-              <label className="block text-gray-600 text-sm mb-2">
-                Student Capacity
-              </label>
               <input
                 type="number"
+                placeholder="Student Capacity"
                 className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
               />
             </div>
@@ -74,11 +55,9 @@ const AddDepartment = () => {
 
           {/* Department Details */}
           <div>
-            <label className="block text-gray-600 text-sm mb-2">
-              Department Details
-            </label>
             <textarea
               rows={4}
+              placeholder="Department Details"
               className="w-full border-b border-gray-300 focus:border-blue-500 outline-none p-2"
             ></textarea>
           </div>
