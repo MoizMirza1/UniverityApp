@@ -6,8 +6,8 @@ const AddStudentPage = () => {
   return (
     <div>
       <PageHeader 
-        title="All Students List" 
-        breadcrumbs={["Students", "All Students List"]} 
+        title="Add Student" 
+        breadcrumbs={["Students", "Add Student"]} 
       />
       <AddStudents/>
     </div>
