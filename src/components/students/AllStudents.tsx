@@ -157,7 +157,7 @@ const AllStudents = () => {
                     <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 border-r border-gray-200">
                       {student.firstName} {student.lastName}
                     </td>
-                    <td className="hidden sm:table-cell px-6 py-2 whitespace-nowrap text-sm text-gray-700 border-r border-gray-200">{student.department}</td>
+                    <td className="hidden sm:table-cell px-6 py-2 whitespace-nowrap text-sm text-gray-700 border-r border-gray-200">{student.department?.name || '-'}</td>
                     <td className="hidden md:table-cell px-6 py-2 whitespace-nowrap text-sm text-gray-700 border-r border-gray-200">
                       <a 
                         href={`tel:${(student.mobileNumber || '').replace(/[^\d+]/g, '')}`} 
@@ -216,7 +216,7 @@ const AllStudents = () => {
                   <h3 className="text-md sm:text-lg font-bold text-gray-800 mb-1">
                     {student.firstName} {student.lastName}
                   </h3>
-                  <p className="text-gray-600 text-xs sm:text-sm mb-2">{student.department}</p>
+                  <p className="text-gray-600 text-xs sm:text-sm mb-2">{student.department?.name || '-'}</p>
                   
                   <div className="text-xs text-gray-600 mb-2 sm:mb-3">
                     {student.address && (
