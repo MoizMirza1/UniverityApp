@@ -50,6 +50,28 @@ const adminNavigation = [
         { name: "About Professor", href: "/admin/professors/aboutProfessors"},
       ]
   },
+  {
+      name: "Professors",
+      icon: ProfessorsIcon,
+      children: [
+        { name: "All Professors", href: "/admin/professors/allProfessors" },
+        { name: "Add Professor", href: "/admin/professors/addProfessors" },
+        { name: "Add Professor Bootstrap", href: "/admin/professors/add-bootstrap" },
+        { name: "Edit Professor", href: "/admin/professors/editProfessors" },
+        { name: "About Professor", href: "/admin/professors/aboutProfessors"},
+      ]
+  },
+   {
+    name: "Departments",
+    icon: StudentsIcon,
+    children: [
+      { name: "All Departments", href: "/admin/deparments/allDepartments" },
+      { name: "Add Departments", href: "/admin/departments/addDepartments" },
+      { name: "Add Departments Bootstrap", href: "/admin/departments/add-bootstrap" },
+      { name: "Edit Departments", href: "/admin/departments/editDepartments" },
+      { name: "About Departments", href: "/admin/departments/aboutDepartments"},
+    ]
+  },
   { name: "Faculty", href: "/admin/faculty", icon: FacultyIcon },
   { name: "Settings", href: "/admin/settings", icon: SettingsIcon }
 ];

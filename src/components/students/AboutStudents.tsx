@@ -51,7 +51,7 @@ const AboutStudents = () => {
             </div>
           </div>
 
-          {/* About Me Card */}
+          
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-2">About Me</h3>
             <p className="text-sm text-gray-600 mb-3">
@@ -60,10 +60,13 @@ const AboutStudents = () => {
             </p>
             <div className="text-xs text-gray-700 space-y-1">
               <p><strong>Gender:</strong> Female</p>
+              <br />
               <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
               <p><strong>Department:</strong> Mechanical</p>
+              <br />
               <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
               <p><strong>Email:</strong> test@exmaple.com</p>
+              <br />
               <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
               <p><strong>Phone:</strong> 1234567890</p>
             </div>
@@ -83,7 +86,7 @@ const AboutStudents = () => {
             </div>
           </div>
 
-          {/* Address */}
+          
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-2">Address</h3>
             <p className="text-sm text-gray-600">
@@ -91,7 +94,7 @@ const AboutStudents = () => {
             </p>
           </div>
 
-          {/* Interest In */}
+         
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-3">Interest In</h3>
             <div className="mb-2">
