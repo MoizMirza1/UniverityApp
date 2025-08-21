@@ -25,6 +25,18 @@ export const getStudent = async (id: string) => {
 };
 
 
+export const updateStudent = async (id: string, updatedData: any) => {
+  const data = await apiClient(`/students/${id}`, {
+    method: "PUT", 
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+  
+  return data.data.student;
+};
+
 export const deleteStudent = async (id: string) => {
   const data = await apiClient(`/students/${id}`, {
     method: "DELETE",
@@ -37,14 +49,7 @@ export const deleteStudent = async (id: string) => {
 };
 
 
-export const updateStudent = async (id: string, updatedData: any) => {
-  const data = await apiClient(`/students/${id}`, {
-    method: "PUT", 
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updatedData),
-  });
-
-  return data.data.student;
+export const previewRollNumber = async (departmentId: string) => {
+  const data = await apiClient(`/preview-roll?departmentId=${departmentId}`);
+  return data.data.rollNumber;
 };

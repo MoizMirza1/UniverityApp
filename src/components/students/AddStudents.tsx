@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
-import { createStudent } from '@/components/services/studentService';
+import { createStudent , previewRollNumber } from '@/components/services/studentService';
+import { getDepartments } from '@/components/services/departmentService';
 
 export const AddStudents: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -28,19 +29,25 @@ export const AddStudents: React.FC = () => {
   const [currentRegistrationDate, setCurrentRegistrationDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const departments = [
-    'Computer Science',
-    'Software',
-    'AI',
-    'Cyber Security'
-  ];
+   const [departments, setDepartments] = useState<{ _id: string; name: string; code: string }[]>([]);
 
   const genders = [
     'Male',
     'Female',
     'Other'
   ];
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const deps = await getDepartments();
+        setDepartments(deps);
+      } catch (err) {
+        console.error('Failed to fetch departments', err);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -50,13 +57,28 @@ export const AddStudents: React.FC = () => {
     }));
   };
 
-  const handleDepartmentSelect = (selectedDepartment: string) => {
+    // ✅ Added: handle department select and preview roll number
+  const handleDepartmentSelect = async (selectedName: string) => {
+    const selectedDep = departments.find(d => d.name === selectedName);
+    if (!selectedDep) return;
+
     setFormData(prev => ({
       ...prev,
-      department: selectedDepartment
+      department: selectedDep._id
     }));
     setIsDepartmentDropdownOpen(false);
+
+    try {
+      const roll = await previewRollNumber(selectedDep._id); // ✅ Added: call preview roll number API
+      setFormData(prev => ({
+        ...prev,
+        rollNo: roll // ✅ Auto-fill roll number
+      }));
+    } catch (err) {
+      console.error('Failed to fetch roll number', err);
+    }
   };
+
 
   const handleGenderSelect = (selectedGender: string) => {
     setFormData(prev => ({
@@ -167,7 +189,7 @@ export const AddStudents: React.FC = () => {
         rollNumber: formData.rollNo,
         email: formData.email,
         admissionDate: new Date(formData.registrationDate).toISOString(),
-        department: formData.department,
+        departmentId: formData.department,
         gender: formData.gender,
         mobileNumber: formData.mobileNumber,
         parentName: formData.parentsName,
@@ -177,9 +199,8 @@ export const AddStudents: React.FC = () => {
 
       const response = await createStudent(studentData);
       console.log('Student created successfully!', response);
+      alert(`Student "${formData.firstName} ${formData.lastName}" created successfully!`);
       
-      
-      // Reset form after successful submission
       handleCancel();
     } catch (err) {
       console.error('Error creating student:', err);
@@ -373,27 +394,18 @@ export const AddStudents: React.FC = () => {
                   'registration'
                 )}
               </div>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)}
-                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between"
-                >
+               <div className="relative">
+                <button type="button" onClick={() => setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)} className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between">
                   <span className={formData.department ? 'text-gray-900' : 'text-gray-400'}>
-                    {formData.department || 'Department'}
+                    {departments.find(d => d._id === formData.department)?.name || 'Department'}
                   </span>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
                 {isDepartmentDropdownOpen && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
-                    {departments.map((departmentOption) => (
-                      <button
-                        key={departmentOption}
-                        type="button"
-                        onClick={() => handleDepartmentSelect(departmentOption)}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900"
-                      >
-                        {departmentOption}
+                    {departments.map(dep => (
+                      <button key={dep._id} type="button" onClick={() => handleDepartmentSelect(dep.name)} className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900">
+                        {dep.name}
                       </button>
                     ))}
                   </div>
