@@ -9,7 +9,7 @@ import {
   FacultyIcon,
   SettingsIcon,
   LogoutIcon,
-  ProfessorsIcon
+  ProfessorsIcon,
 } from "../Icons";
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
@@ -36,9 +36,19 @@ const adminNavigation = [
       { name: "All Students", href: "/admin/students/allStudents" },
       { name: "Add Student", href: "/admin/students/addStudents" },
       { name: "Add Student Bootstrap", href: "/admin/students/add-bootstrap" },
-      { name: "Edit Student", href: "/admin/students/editStudents" },
+      // { name: "Edit Student", href: "/admin/students/editStudents" },
       { name: "About Student", href: "/admin/students/aboutStudents"},
-    ]
+    ]},
+    {
+      name: "Professors",
+      icon: ProfessorsIcon,
+      children: [
+        { name: "All Professors", href: "/admin/professors/allProfessors" },
+        { name: "Add Professor", href: "/admin/professors/addProfessors" },
+        { name: "Add Professor Bootstrap", href: "/admin/professors/add-bootstrap" },
+        { name: "Edit Professor", href: "/admin/professors/editProfessors" },
+        { name: "About Professor", href: "/admin/professors/aboutProfessors"},
+      ]
   },
   {
       name: "Professors",

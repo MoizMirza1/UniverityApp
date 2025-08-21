@@ -51,7 +51,10 @@ export const AddCourses: React.FC = () => {
   };
 
   const handleDateSelect = (date: Date) => {
-    const formattedDate = date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
     setFormData(prev => ({
       ...prev,
       startFrom: formattedDate
@@ -139,7 +142,7 @@ export const AddCourses: React.FC = () => {
       title: formData.courseName,
       courseCode: formData.courseCode,
       description: formData.courseDetails,
-      startDate: new Date(formData.startFrom).toISOString(), 
+      startDate: new Date(formData.startFrom).toISOString(),
       duration: formData.courseTimeLength,
       price: Number(formData.coursePrice),
       professor: formData.professorName,
