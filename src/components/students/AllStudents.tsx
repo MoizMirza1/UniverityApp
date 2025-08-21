@@ -37,18 +37,12 @@ const AllStudents = () => {
     }
   
     try {
-      // Optimistically remove from UI first
       setStudents(prevStudents => prevStudents.filter(student => student._id !== id));
-  
-      // Then call backend
       await deleteStudent(id);
-  
-      // Re-fetch to stay 100% in sync with backend
       await fetchStudents();
   
     } catch (err: any) {
       setError(err?.message || 'Failed to delete student');
-      // If delete failed, refresh list to restore
       await fetchStudents();
     }
   };
@@ -197,7 +191,6 @@ const AllStudents = () => {
           </div>
         )}
 
-        {/* Grid View - Responsive Columns */}
         {viewMode === 'grid' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {displayedStudents.map((student, idx) => (
@@ -244,7 +237,6 @@ const AllStudents = () => {
                   </div>
                 </div>
                 
-                {/* Read More Button */}
                 <button className="bg-pink-500 hover:bg-pink-600 text-white px-3 sm:px-4 py-1 rounded-full text-xs font-medium transition-colors mt-1 sm:mt-2 mx-auto">
                   Read More
                 </button>

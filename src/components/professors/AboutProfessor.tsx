@@ -64,10 +64,8 @@ const AboutProfessor = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        
-        {/* ---------- LEFT COLUMN ---------- */}
         <div className="md:col-span-1 space-y-6">
-          {/* Professor Profile Card */}
+
           <div className="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] overflow-hidden p-5 text-center">           
             <div className="flex justify-center">
               <Image
@@ -106,7 +104,6 @@ const AboutProfessor = () => {
             </div>
           </div>
 
-          {/* About Me Card */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-2">About Me</h3>
             <p className="text-sm text-gray-600 mb-3">
@@ -138,7 +135,6 @@ const AboutProfessor = () => {
             </div>
           </div>
 
-          {/* Address */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-2">Address</h3>
             <p className="text-sm text-gray-600">
@@ -146,7 +142,6 @@ const AboutProfessor = () => {
             </p>
           </div>
 
-          {/* Interest In */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-3">Interests</h3>
             <div className="mb-2">
@@ -170,9 +165,7 @@ const AboutProfessor = () => {
           </div>
         </div>
 
-        {/* ---------- RIGHT COLUMN (Tabs + Activity UI) ---------- */}
         <div className="md:col-span-3 bg-white p-6 rounded-lg shadow">
-          {/* Tab Buttons */}
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setActiveTab("about")}
@@ -196,7 +189,6 @@ const AboutProfessor = () => {
             </button>
           </div>
 
-          {/* Tab Content */}
           {activeTab === "about" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Professor Details</h2>
@@ -222,7 +214,6 @@ const AboutProfessor = () => {
                   rows={4}
                 />
                 
-                {/* Attachment previews */}
                 {attachments.length > 0 && (
                   <div className="mb-3 flex flex-wrap gap-2">
                     {attachments.map((attachment, index) => (
@@ -262,7 +253,6 @@ const AboutProfessor = () => {
                 
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-2">
-                    {/* Emoji picker button */}
                     <div className="relative">
                       <button 
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
