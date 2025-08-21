@@ -55,7 +55,7 @@ const adminNavigation = [
     name: "Departments",
     icon: StudentsIcon,
     children: [
-      { name: "All Departments", href: "/admin/deparments/allDepartments" },
+      { name: "All Departments", href: "/admin/departments/allDepartments" },
       { name: "Add Departments", href: "/admin/departments/addDepartments" },
       { name: "Add Departments Bootstrap", href: "/admin/departments/add-bootstrap" },
       { name: "Edit Departments", href: "/admin/departments/editDepartments" },
