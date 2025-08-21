@@ -6,7 +6,16 @@ export const getDepartments = async () => {
   return data.data.departments;
 };
 
-export const createDepartment = async (departmentData: { name: string; code: string }) => {
+// Create a new department (admin)
+export type CreateDepartmentPayload = {
+  name: string;
+  code: string;
+  headOfDepartment: string;
+  maxStudents: number;
+  departmentDetails: string;
+};
+
+export const createDepartment = async (departmentData: CreateDepartmentPayload) => {
   const data = await apiClient("/departments", {
     method: "POST",
     headers: {
@@ -14,7 +23,7 @@ export const createDepartment = async (departmentData: { name: string; code: str
     },
     body: JSON.stringify(departmentData),
   });
-  return data.data.department;
+  return data.data?.department ?? data.data;
 };
 
 

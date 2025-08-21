@@ -28,7 +28,6 @@ export default function SignInPage() {
   return (
     <div>
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden p-10">
-        {/* Avatar + Info */}
         <div className="flex flex-col items-center text-center">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg">
             <Image
@@ -47,8 +46,6 @@ export default function SignInPage() {
             projects. The intuitive interface saves us hours every week."
           </p>
         </div>
-
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="mt-10 space-y-6 bg-gray-50 p-6 rounded-xl shadow-md border border-gray-100"
@@ -133,8 +130,6 @@ export default function SignInPage() {
             </Link>
           </div>
         </form>
-
-        {/* Footer */}
         <div className="mt-6 text-center text-xs text-gray-500">
           <p>© 2025 Who? All rights reserved.</p>
         </div>
