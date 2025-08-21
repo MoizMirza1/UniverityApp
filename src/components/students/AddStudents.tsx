@@ -197,6 +197,8 @@ export const AddStudents: React.FC = () => {
         address: formData.address,
       };
 
+      console.log("📤 Sending student data to backend:", studentData);
+
       const response = await createStudent(studentData);
       console.log('Student created successfully!', response);
       alert(`Student "${formData.firstName} ${formData.lastName}" created successfully!`);
@@ -351,11 +353,12 @@ export const AddStudents: React.FC = () => {
                 <input
                   type="text"
                   name="rollNo"
-                  placeholder="Roll No"
+                  placeholder="Roll No (auto-generated)"
                   value={formData.rollNo}
                   onChange={handleInputChange}
-                  required
-                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                  readOnly
+                  aria-readonly
+                  className="w-full px-0 py-3 border-0 border-b border-gray-200 focus:outline-none focus:border-gray-200 bg-gray-100 text-gray-500 placeholder-gray-400 italic cursor-not-allowed"
                 />
               </div>
               <div>

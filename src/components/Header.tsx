@@ -20,7 +20,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <span>Hello, {session.user?.name}</span>
           <button 
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
             className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors"
           >
             Sign Out
