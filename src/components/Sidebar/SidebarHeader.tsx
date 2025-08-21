@@ -10,7 +10,6 @@ export default function SidebarHeader() {
 
   return (
     <div>
-      {/* Top logo bar */}
       <div className="bg-indigo-500 p-4 flex justify-center">
         <Link href="/" className="flex items-center space-x-2 text-white">
     <School size={40} />
@@ -18,7 +17,6 @@ export default function SidebarHeader() {
   </Link>
       </div>
 
-      {/* Profile section */}
       <div className="flex flex-col items-center p-6 bg-white">
         
         <Image

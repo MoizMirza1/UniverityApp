@@ -72,7 +72,7 @@ export const AddStudents: React.FC = () => {
       const roll = await previewRollNumber(selectedDep._id); // ✅ Added: call preview roll number API
       setFormData(prev => ({
         ...prev,
-        rollNo: roll // ✅ Auto-fill roll number
+        rollNo: roll 
       }));
     } catch (err) {
       console.error('Failed to fetch roll number', err);
@@ -88,7 +88,6 @@ export const AddStudents: React.FC = () => {
     setIsGenderDropdownOpen(false);
   };
 
-  // Department is sent as-is to match backend enum values
 
   const handleRegistrationDateSelect = (date: Date) => {
     const year = date.getFullYear();
@@ -116,12 +115,10 @@ export const AddStudents: React.FC = () => {
     
     const days = [];
     
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDay; i++) {
       days.push(null);
     }
     
-    // Add all days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(new Date(year, month, i));
     }
@@ -321,7 +318,6 @@ export const AddStudents: React.FC = () => {
               </div>
             )}
 
-            {/* Row 1: First Name & Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -347,7 +343,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: Roll No & Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -374,7 +369,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 3: Registration Date & Class */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div className="relative">
                 <input
@@ -416,7 +410,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 4: Gender & Mobile Number */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div className="relative">
                 <button
@@ -457,7 +450,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 5: Parent's Name & Parent's Mobile Number */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <input
@@ -483,7 +475,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 6: Address */}
             <div>
               <textarea
                 name="address"
@@ -496,7 +487,6 @@ export const AddStudents: React.FC = () => {
               />
             </div>
 
-            {/* Upload Photo Section */}
             <div>
               <h3 className="text-base font-medium text-gray-900 mb-4">Upload Photo</h3>
               <div
@@ -527,7 +517,6 @@ export const AddStudents: React.FC = () => {
               </div>
             </div>
 
-            {/* Submit and Cancel Buttons */}
             <div className="flex items-center justify-center space-x-6 pt-8">
               <button
                 type="submit"

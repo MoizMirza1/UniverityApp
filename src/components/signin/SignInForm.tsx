@@ -27,9 +27,9 @@ export default function SignInPage() {
 
   return (
     <div>
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden p-10">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden p-12">
         <div className="flex flex-col items-center text-center">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg">
+          <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg">
             <Image
               src="/images/cat.png"
               alt="User Avatar"
