@@ -1,6 +1,5 @@
 "use client";
 import { signIn } from "next-auth/react";
-import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link"; 
 
@@ -26,45 +25,30 @@ export default function SignInPage() {
   };
 
   return (
-    <div>
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden p-12">
-        <div className="flex flex-col items-center text-center">
-          <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg">
-            <Image
-              src="/images/cat.png"
-              alt="User Avatar"
-              width={128}
-              height={128}
-              className="object-cover"
-            />
-          </div>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">Snoop Cat</h2>
-          <p className="text-blue-600 text-sm font-medium mt-1">Admin / Student</p>
-
-          <p className="mt-6 text-gray-600 italic text-sm px-4">
-            "This platform has completely transformed how our team collaborates on
-            projects. The intuitive interface saves us hours every week."
-          </p>
+    <div className="flex items-center justify-center min-h-screen py-8 px-4 sm:px-6 lg:px-4">
+      <div className="w-full max-x-xl bg-gradient-to-b from-blue-100 via-slate-300 to-blue-100 rounded-2xl shadow-xl overflow-hidden p-8">
+        {/* Header with Sign In text */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Sign In</h1>
+          <p className="text-gray-600 mt-2">Access your account to continue</p>
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="mt-10 space-y-6 bg-gray-50 p-6 rounded-xl shadow-md border border-gray-100"
-        >
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <input
               name="email"
               type="email"
-              className="border border-gray-200 p-4 w-full rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
-              placeholder="Enter your email"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              placeholder="Enter your email address"
               required
             />
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-1">
               <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
@@ -78,7 +62,7 @@ export default function SignInPage() {
             <input
               name="password"
               type="password"
-              className="border border-gray-200 p-4 w-full rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               placeholder="Enter your password"
               required
             />
@@ -89,14 +73,14 @@ export default function SignInPage() {
             disabled={isLoading}
             className={`${
               isLoading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
-            } text-white p-4 w-full rounded-xl font-medium transition-all duration-200 shadow-md flex items-center justify-center`}
+                ? "bg-blue-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white p-3 w-full rounded-lg font-medium transition-all duration-200 flex items-center justify-center h-12`}
           >
             {isLoading ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -121,17 +105,22 @@ export default function SignInPage() {
               "Sign In"
             )}
           </button>
-          <div className="text-center">
+          
+          <div className="text-center pt-2">
             <Link
               href="/"
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors inline-flex items-center"
             >
-              ← Go to Home
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back to Home
             </Link>
           </div>
         </form>
-        <div className="mt-6 text-center text-xs text-gray-500">
-          <p>© 2025 Who? All rights reserved.</p>
+        
+        <div className="mt-6 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
+          <p>© 2025 Anonymous. All rights reserved.</p>
         </div>
       </div>
     </div>
