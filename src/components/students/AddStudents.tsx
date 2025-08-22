@@ -57,7 +57,6 @@ export const AddStudents: React.FC = () => {
     }));
   };
 
-    // ✅ Added: handle department select and preview roll number
   const handleDepartmentSelect = async (selectedName: string) => {
     const selectedDep = departments.find(d => d.name === selectedName);
     if (!selectedDep) return;
