@@ -1,4 +1,4 @@
-"use client"; // React hooks use karne ke liye Next.js directive
+"use client"; 
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -10,9 +10,9 @@ const AboutStudents = () => {
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         
-        {/* ---------- LEFT COLUMN ---------- */}
+       
         <div className="md:col-span-1 space-y-6">
-          {/* Student Profile Card */}
+         
           <div className="bg-white rounded-xl shadow-lg overflow-hidden p-5 text-center">
             <div className="flex justify-center">
               <Image
@@ -118,9 +118,9 @@ const AboutStudents = () => {
           </div>
         </div>
 
-        {/* ---------- RIGHT COLUMN (Tabs + Activity UI) ---------- */}
+        
         <div className="md:col-span-3 bg-white p-6 rounded-lg shadow">
-          {/* Tab Buttons */}
+         
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setActiveTab("about")}
@@ -144,7 +144,7 @@ const AboutStudents = () => {
             </button>
           </div>
 
-          {/* Tab Content */}
+    
           {activeTab === "about" && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Student Details</h2>
@@ -162,7 +162,7 @@ const AboutStudents = () => {
 
           {activeTab === "activity" && (
             <div>
-              {/* Post box */}
+            
               <textarea
                 className="w-full border rounded p-2 mb-4"
                 placeholder="What's in your mind today?"
@@ -171,9 +171,9 @@ const AboutStudents = () => {
                 Post
               </button>
 
-              {/* Activity feed */}
+             
               <div className="mt-6 space-y-8">
-                {/* First Activity */}
+              
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <img src="/images/Student2.jpg" alt="Rajesh" className="w-10 h-10 rounded-full object-cover" />
@@ -201,7 +201,7 @@ const AboutStudents = () => {
                       </button>
                 </div>
                   <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
-                {/* Second Activity */}
+               
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="John Doe" className="w-10 h-10 rounded-full object-cover" />
@@ -226,7 +226,7 @@ const AboutStudents = () => {
                 </div>
                  <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
                  {/* <hr className="my-4 border-t-4 border-gray-400 opacity-50" /> */}
-                {/* Third Activity */}
+              
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="Kehn Anderson" className="w-10 h-10 rounded-full object-cover" />
@@ -255,7 +255,7 @@ const AboutStudents = () => {
                   </div>
                 </div>
                 <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
-                 {/* Fourth Activity */}
+           
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="Kehn Anderson" className="w-10 h-10 rounded-full object-cover" />
@@ -284,7 +284,7 @@ const AboutStudents = () => {
 
                 <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
 
-                {/* Fifth Activity */}
+               
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="Jacob Ryan" className="w-10 h-10 rounded-full object-cover" />
@@ -296,7 +296,7 @@ const AboutStudents = () => {
                     </div>
                   </div>
                     <div className="flex flex-col items-start mt-2">
-                      <img src="/images/Student4.jpg" alt="activity" className="w-250 h-100 rounded object-cover" />
+                      <Image width={80} height={80} src="/images/Student4.jpg" alt="activity" className="w-250 h-100 rounded object-cover" />
                       <button
                         className="flex items-center gap-1 text-gray-500 hover:text-pink-600 focus:outline-none mt-2"
                         title="Like"
@@ -312,7 +312,7 @@ const AboutStudents = () => {
                 </div>
                 
                  <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
-                {/* Sixth Activity */}
+               
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="Jacob Ryan" className="w-10 h-10 rounded-full object-cover" />
