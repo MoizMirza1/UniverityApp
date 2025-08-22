@@ -6,7 +6,6 @@ export const getDepartments = async () => {
   return data.data.departments;
 };
 
-// Create a new department (admin)
 export type CreateDepartmentPayload = {
   name: string;
   code: string;
