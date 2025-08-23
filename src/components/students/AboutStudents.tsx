@@ -312,7 +312,6 @@ const AboutStudents = () => {
                 </div>
                 
                  <hr className="my-1 border-t-1 border-gray-400 opacity-50"/>
-               
                 <div>
                   <div className="flex items-center gap-3">
                     <img src="/images/Student4.jpg" alt="Jacob Ryan" className="w-10 h-10 rounded-full object-cover" />
