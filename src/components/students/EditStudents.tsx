@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { updateStudent, getStudent } from '@/components/services/studentService';
+import { getDepartments } from '@/components/services/departmentService';
 
 type StudentData = {
   firstName: string;
@@ -12,26 +13,37 @@ type StudentData = {
   rollNumber: string;
   email: string;
   admissionDate: string;
-  department: string;
+  department: {
+    _id: string;
+    name: string;
+    code: string;
+    headOfDepartment?: string;
+    maxStudents?: number;
+    departmentDetails?: string;
+  };
   gender: string;
   mobileNumber: string;
   parentName: string;
   parentNumber: string;
   address: string;
   image?: string;
+  status?: string;
 };
 
-type UpdateStudentData = Partial<StudentData>;
-
-const departments = ['Computer Science', 'Software', 'AI', 'Cyber Security'];
-const genders = ['Male', 'Female', 'Other'];
+type Department = {
+  _id: string;
+  name: string;
+  code: string;
+  headOfDepartment?: string;
+  maxStudents?: number;
+  departmentDetails?: string;
+};
 
 export const EditStudents: React.FC = () => {
   const params = useParams();
-  const router = useRouter();
   const studentId = params.studentId as string;
 
-  const [formData, setFormData] = useState<StudentData>({
+  const [formData, setFormData] = useState<Omit<StudentData, 'department'> & { department: string }>({
     firstName: '',
     lastName: '',
     rollNumber: '',
@@ -52,7 +64,11 @@ export const EditStudents: React.FC = () => {
     rollNumber: '',
     email: '',
     admissionDate: '',
-    department: '',
+    department: {
+      _id: '',
+      name: '',
+      code: ''
+    },
     gender: '',
     mobileNumber: '',
     parentName: '',
@@ -61,6 +77,7 @@ export const EditStudents: React.FC = () => {
     image: '',
   });
 
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
@@ -71,55 +88,199 @@ export const EditStudents: React.FC = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
+  const genders = ['Male', 'Female', 'Other'];
+
+  // Fetch student data and departments
   useEffect(() => {
-    const fetchStudent = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const s = await getStudent(studentId);
-        const admissionDate = s?.admissionDate
-          ? new Date(s.admissionDate).toISOString().split('T')[0]
-          : '';
         
-        let address = '';
-        if (typeof s?.address === 'string') {
-          address = s.address;
-        } else if (s?.address && typeof s.address === 'object') {
-          const a = s.address;
-          address = [a.line1 || a.street || a.addressLine1 || a.address, a.city, a.state || a.province, a.country, a.zip || a.postalCode]
-            .filter(Boolean)
-            .join(', ');
-        }
+        // Fetch departments
+        const deps = await getDepartments();
+        setDepartments(deps);
+
+        // Fetch student data
+        const student = await getStudent(studentId);
         
-        const data: StudentData = {
-          firstName: s?.firstName || '',
-          lastName: s?.lastName || '',
-          rollNumber: s?.rollNumber || s?.rollNo || '',
-          email: s?.email || '',
-          admissionDate,
-          department: s?.department || '',
-          gender: s?.gender || '',
-          mobileNumber: s?.mobileNumber || s?.mobile || '',
-          parentName: s?.parentName || s?.parentsName || '',
-          parentNumber: s?.parentNumber || s?.parentsMobileNumber || '',
-          address,
-          image: s?.image || '',
+        const studentData: StudentData = {
+          firstName: student?.firstName || '',
+          lastName: student?.lastName || '',
+          rollNumber: student?.rollNumber || '',
+          email: student?.email || '',
+          admissionDate: student?.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : '',
+          department: student?.department || {
+            _id: '',
+            name: '',
+            code: ''
+          },
+          gender: student?.gender || '',
+          mobileNumber: student?.mobileNumber || '',
+          parentName: student?.parentName || '',
+          parentNumber: student?.parentNumber || '',
+          address: student?.address || '',
+          image: student?.image || '',
+          status: student?.status || ''
         };
-        setFormData(data);
-        setOriginalData(data);
-      } catch {
-        setError('Failed to load student');
+
+        setOriginalData(studentData);
+        
+        // Set form data with department ID as string for dropdown
+        setFormData({
+          ...studentData,
+          department: studentData.department?._id || ''
+        });
+        
+      } catch (err) {
+        console.error('Failed to fetch data', err);
+        setError('Failed to load student data');
       } finally {
         setIsLoading(false);
       }
     };
-    if (studentId) fetchStudent();
+
+    if (studentId) {
+      fetchData();
+    }
   }, [studentId]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDepartmentSelect = (departmentId: string) => {
+    const selectedDepartment = departments.find(d => d._id === departmentId);
+    if (!selectedDepartment) return;
+
+    // Keep the original roll number - don't change it when switching departments
+    setFormData(prev => ({
+      ...prev,
+      department: departmentId
+      // rollNumber remains unchanged
+    }));
+    setIsDepartmentDropdownOpen(false);
+  };
+
+  const handleGenderSelect = (selectedGender: string) => {
+    setFormData(prev => ({ ...prev, gender: selectedGender }));
+    setIsGenderDropdownOpen(false);
+  };
+
+  const handleRegistrationDateSelect = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    setFormData(prev => ({ ...prev, admissionDate: formattedDate }));
+    setIsRegistrationCalendarOpen(false);
+  };
+
+  const getChangedFields = (): Partial<StudentData> => {
+    const changed: Partial<StudentData> = {};
+    
+    if (formData.firstName !== originalData.firstName) {
+      changed.firstName = formData.firstName;
+    }
+    
+    if (formData.lastName !== originalData.lastName) {
+      changed.lastName = formData.lastName;
+    }
+    
+    // Roll number remains the same - no need to check for changes
+    if (formData.rollNumber !== originalData.rollNumber) {
+      changed.rollNumber = formData.rollNumber;
+    }
+    
+    if (formData.email !== originalData.email) {
+      changed.email = formData.email;
+    }
+    
+    if (formData.admissionDate !== originalData.admissionDate) {
+      changed.admissionDate = formData.admissionDate;
+    }
+    
+    // Handle department changes
+    if (formData.department !== originalData.department._id) {
+      const selectedDepartment = departments.find(d => d._id === formData.department);
+      if (selectedDepartment) {
+        changed.department = selectedDepartment;
+      }
+    }
+    
+    if (formData.gender !== originalData.gender) {
+      changed.gender = formData.gender;
+    }
+    
+    if (formData.mobileNumber !== originalData.mobileNumber) {
+      changed.mobileNumber = formData.mobileNumber;
+    }
+    
+    if (formData.parentName !== originalData.parentName) {
+      changed.parentName = formData.parentName;
+    }
+    
+    if (formData.parentNumber !== originalData.parentNumber) {
+      changed.parentNumber = formData.parentNumber;
+    }
+    
+    if (formData.address !== originalData.address) {
+      changed.address = formData.address;
+    }
+    
+    if (imageFile) {
+      changed.image = imageFile.name;
+    }
+    
+    return changed;
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const updates = getChangedFields();
+      
+      if (Object.keys(updates).length === 0 && !imageFile) {
+        setError('No changes made');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      await updateStudent(studentId, updates);
+      
+      // Update original data with new values
+      const updatedOriginalData: StudentData = {
+        ...originalData,
+        ...updates,
+        department: updates.department || originalData.department
+      };
+      
+      setOriginalData(updatedOriginalData);
+      
+             // Show success alert
+       alert('Student updated successfully!');
+      
+    } catch (err: unknown) {
+      console.error('Error updating student:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to update student: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset form to original data
+    setFormData({
+      ...originalData,
+      department: originalData.department._id
+    });
+    setError('');
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -149,49 +310,25 @@ export const EditStudents: React.FC = () => {
     }
   };
 
-  const getChangedFields = (): UpdateStudentData => {
-    const changed: UpdateStudentData = {};
-    (Object.keys(formData) as Array<keyof StudentData>).forEach(key => {
-      if (formData[key] !== originalData[key]) {
-        changed[key] = formData[key];
-      }
-    });
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
     
-    if (changed.admissionDate) {
-      try {
-        changed.admissionDate = new Date(changed.admissionDate).toISOString();
-      } catch {}
+    const days: Array<Date | null> = [];
+    
+    for (let i = 0; i < startingDay; i++) {
+      days.push(null);
     }
-    return changed;
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-    try {
-      const updates = getChangedFields();
-      
-      if (imageFile) {
-        updates.image = imageFile.name;
-      }
-      
-      if (Object.keys(updates).length === 0 && !imageFile) {
-        setIsSubmitting(false);
-        return;
-      }
-      await updateStudent(studentId, updates);
-      setOriginalData(formData);
-      alert('Student updated successfully!');
-    } catch {
-      setError('Failed to update student');
-    } finally {
-      setIsSubmitting(false);
+    
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(year, month, i));
     }
-  };
-
-  const handleCancel = () => {
-    router.push('/admin/students');
+    
+    return days;
   };
 
   if (isLoading) {
@@ -202,12 +339,15 @@ export const EditStudents: React.FC = () => {
     );
   }
 
+  const selectedDepartment = departments.find(d => d._id === formData.department);
+  const originalDepartmentName = originalData.department?.name || '';
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-10xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-4 md:px-8 py-6 border-b border-gray-200">
-            <h1 className="text-lg md:text-xl font-medium text-gray-900">Basic Information</h1>
+            <h1 className="text-lg md:text-xl font-medium text-gray-900">Edit Student Information</h1>
             <button className="p-1 hover:bg-gray-100 rounded">
               <MoreVertical className="w-5 h-5 text-gray-500" />
             </button>
@@ -215,14 +355,17 @@ export const EditStudents: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="px-4 md:px-8 py-8 space-y-6 md:space-y-8">
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700">{error}</div>
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 text-sm text-red-700">
+                {error}
+                <button onClick={() => setError('')} className="ml-4 text-red-700 hover:text-red-900">×</button>
+              </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <input
                 type="text"
                 name="firstName"
-                placeholder="First Name"
+                placeholder={originalData.firstName || "First Name"}
                 value={formData.firstName}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -230,7 +373,7 @@ export const EditStudents: React.FC = () => {
               <input
                 type="text"
                 name="lastName"
-                placeholder="Last Name"
+                placeholder={originalData.lastName || "Last Name"}
                 value={formData.lastName}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -238,18 +381,23 @@ export const EditStudents: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              <input
-                type="text"
-                name="rollNumber"
-                placeholder="Roll Number"
-                value={formData.rollNumber}
-                onChange={handleInputChange}
-                className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
-              />
+                             <div>
+                 <input
+                   type="text"
+                   name="rollNumber"
+                   placeholder={originalData.rollNumber || "Roll Number"}
+                   value={formData.rollNumber}
+                   onChange={handleInputChange}
+                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
+                 />
+                 <div className="text-xs text-gray-500 mt-1">
+                   Roll number remains unchanged when switching departments
+                 </div>
+               </div>
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder={originalData.email || "Email"}
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -261,7 +409,7 @@ export const EditStudents: React.FC = () => {
                 <input
                   type="text"
                   name="admissionDate"
-                  placeholder="Admission Date"
+                  placeholder={originalData.admissionDate || "Admission Date"}
                   value={formData.admissionDate}
                   onChange={handleInputChange}
                   onClick={() => setIsRegistrationCalendarOpen(!isRegistrationCalendarOpen)}
@@ -286,21 +434,11 @@ export const EditStudents: React.FC = () => {
                       ))}
                     </div>
                     <div className="grid grid-cols-7 gap-1">
-                      {(() => {
-                        const days: Array<Date | null> = [];
-                        const year = currentRegistrationDate.getFullYear();
-                        const month = currentRegistrationDate.getMonth();
-                        const firstDay = new Date(year, month, 1);
-                        const lastDay = new Date(year, month + 1, 0);
-                        const startingDay = firstDay.getDay();
-                        for (let i = 0; i < startingDay; i++) days.push(null);
-                        for (let i = 1; i <= lastDay.getDate(); i++) days.push(new Date(year, month, i));
-                        return days;
-                      })().map((date, index) => (
+                      {getDaysInMonth(currentRegistrationDate).map((date, index) => (
                         <button
                           key={index}
                           type="button"
-                          onClick={() => date && (setFormData(prev => ({ ...prev, admissionDate: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` })), setIsRegistrationCalendarOpen(false))}
+                          onClick={() => date && handleRegistrationDateSelect(date)}
                           disabled={!date}
                           className={`w-7 h-7 md:w-8 md:h-8 text-xs md:text-sm rounded hover:bg-blue-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             date ? 'text-gray-900 hover:bg-blue-50' : 'text-gray-300 cursor-default'
@@ -317,37 +455,47 @@ export const EditStudents: React.FC = () => {
                   </div>
                 )}
               </div>
+              
+              {/* Department Dropdown */}
               <div className="relative">
-                <button type="button" onClick={() => setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)} className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between">
+                <button 
+                  type="button" 
+                  onClick={() => setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)} 
+                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between"
+                >
                   <span className={formData.department ? 'text-gray-900' : 'text-gray-400'}>
-                    {formData.department || 'Department'}
+                    {selectedDepartment?.name || originalDepartmentName || 'Select Department'}
                   </span>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
                 {isDepartmentDropdownOpen && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
-                    {departments.map((d) => (
-                      <button key={d} type="button" onClick={() => { setFormData(prev => ({ ...prev, department: d })); setIsDepartmentDropdownOpen(false); }} className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900">
-                        {d}
+                    {departments.map((dept) => (
+                      <button 
+                        key={dept._id} 
+                        type="button" 
+                        onClick={() => handleDepartmentSelect(dept._id)} 
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900"
+                      >
+                        {dept.name} ({dept.code})
                       </button>
                     ))}
                   </div>
                 )}
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div className="relative">
                 <button type="button" onClick={() => setIsGenderDropdownOpen(!isGenderDropdownOpen)} className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between">
                   <span className={formData.gender ? 'text-gray-900' : 'text-gray-400'}>
-                    {formData.gender || 'Gender'}
+                    {formData.gender || originalData.gender || 'Gender'}
                   </span>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
                 {isGenderDropdownOpen && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
                     {genders.map((g) => (
-                      <button key={g} type="button" onClick={() => { setFormData(prev => ({ ...prev, gender: g })); setIsGenderDropdownOpen(false); }} className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900">
+                      <button key={g} type="button" onClick={() => handleGenderSelect(g)} className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900">
                         {g}
                       </button>
                     ))}
@@ -357,7 +505,7 @@ export const EditStudents: React.FC = () => {
               <input
                 type="tel"
                 name="mobileNumber"
-                placeholder="Mobile Number"
+                placeholder={originalData.mobileNumber || "Mobile Number"}
                 value={formData.mobileNumber}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -368,7 +516,7 @@ export const EditStudents: React.FC = () => {
               <input
                 type="text"
                 name="parentName"
-                placeholder="Parent's Name"
+                placeholder={originalData.parentName || "Parent's Name"}
                 value={formData.parentName}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -376,7 +524,7 @@ export const EditStudents: React.FC = () => {
               <input
                 type="tel"
                 name="parentNumber"
-                placeholder="Parent's Mobile Number"
+                placeholder={originalData.parentNumber || "Parent's Mobile Number"}
                 value={formData.parentNumber}
                 onChange={handleInputChange}
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent"
@@ -386,7 +534,7 @@ export const EditStudents: React.FC = () => {
             <div>
               <textarea
                 name="address"
-                placeholder="Address"
+                placeholder={originalData.address || "Address"}
                 value={formData.address}
                 onChange={handleInputChange}
                 rows={4}
@@ -395,7 +543,7 @@ export const EditStudents: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Course Photo</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Update Student Photo</label>
               <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -417,38 +565,40 @@ export const EditStudents: React.FC = () => {
                     <span className="text-gray-600">
                       Selected: {imageFile.name}
                     </span>
-                  ) : formData.image ? (
+                  ) : originalData.image ? (
                     <span className="text-gray-600">
-                      Current image: {formData.image.split('/').pop()}
+                      Current image: {originalData.image}
                     </span>
                   ) : (
                     'Drop files here to upload or click to select'
                   )}
                 </div>
               </div>
-              {formData.image && !imageFile && (
-                <div className="mt-2 text-sm text-gray-500">
-                  Current image will be kept if no new image is selected
-                </div>
-              )}
             </div>
 
             <div className="flex items-center justify-center space-x-6 pt-8">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-3 py-2 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium text-sm tracking-wide ${
-                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                className={`px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium text-sm min-w-[120px] ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    UPDATING...
+                  </div>
+                ) : (
+                  'UPDATE STUDENT'
+                )}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className={`px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 cursor-pointer focus:ring-red-500 focus:ring-offset-2 font-medium text-sm tracking-wide ${
-                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                className={`px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium text-sm min-w-[100px] ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 CANCEL

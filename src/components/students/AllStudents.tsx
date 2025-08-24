@@ -173,7 +173,7 @@ const AllStudents = () => {
                     </td>
                     <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium flex space-x-1 sm:space-x-2">
                       <Link
-                        href={`/admin/students/edit/${student._id}`}
+                        href={`/admin/students/editStudents/${student._id}`}
                         className="p-1 sm:p-2 rounded-full bg-green-200 hover:bg-green-300">
                         <EditIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-700" />
                       </Link>
