@@ -6,7 +6,7 @@ export const getStudents = async () => {
 };
 
 
-export const createStudent = async (studentData: any) => {
+export const createStudent = async (studentData: Record<string, unknown>) => {
   const data = await apiClient("/students", {
     method: "POST",
     headers: {
@@ -25,7 +25,7 @@ export const getStudent = async (id: string) => {
 };
 
 
-export const updateStudent = async (id: string, updatedData: any) => {
+export const updateStudent = async (id: string, updatedData: Record<string, unknown>) => {
   const data = await apiClient(`/students/${id}`, {
     method: "PUT", 
     headers: {
@@ -50,6 +50,12 @@ export const deleteStudent = async (id: string) => {
 
 
 export const previewRollNumber = async (departmentId: string) => {
-  const data = await apiClient(`/preview-roll?departmentId=${departmentId}`);
-  return data.data.rollNumber;
+  try {
+    const data = await apiClient(`/preview-roll?departmentId=${departmentId}`);;     
+    const rollNumber = data.data.rollNumber;
+    return rollNumber;
+  } catch (error) {
+    console.error('Error in previewRollNumber:', error);
+    throw error;
+  }
 };
