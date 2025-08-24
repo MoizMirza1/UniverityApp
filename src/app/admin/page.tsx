@@ -11,7 +11,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-semibold text-gray-900">University Dashboard</h1>
@@ -23,7 +22,6 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-grow flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
           <div className="text-center space-y-6">
