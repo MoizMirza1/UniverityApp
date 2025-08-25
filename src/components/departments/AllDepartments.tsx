@@ -3,13 +3,22 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EditIcon, DeleteIcon } from '../Icons';
-import { getDepartments, deleteDepartment } from '@/components/services/departmentService';
+import { getDepartments, deleteDepartment } from '../services';
 
 const AllDepartments = () => {
   const [viewMode, setViewMode] = useState('list');
   const [entries, setEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<Array<{
+    _id: string;
+    name: string;
+    code: string;
+    headOfDepartment?: string;
+    maxStudents?: number;
+    departmentDetails?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +32,9 @@ const AllDepartments = () => {
       setError(null);
       const data = await getDepartments();
       setDepartments(Array.isArray(data) ? data : []);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to load Departments');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load Departments';
+      setError(errorMessage);
       setDepartments([]);
     } finally {
       setLoading(false);
@@ -46,8 +56,9 @@ const AllDepartments = () => {
    
       await fetchDepartments();
 
-    } catch (err: any) {
-      setError(err?.message || 'Failed to delete department');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete department';
+      setError(errorMessage);
       
       await fetchDepartments();
     }
@@ -96,32 +107,47 @@ const AllDepartments = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-        <div className="flex flex-col mb-6">
+        <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">All Departments List</h2>
           <Link
             href="/admin/departments/addDepartments"
-            className="inline-block bg-brand hover:bg-brandhover text-white px-4 py-2 rounded-md font-medium w-fit shadow-sm hover:shadow-md transition-shadow"
+            className="inline-block bg-brand hover:bg-brandhover text-white px-4 py-2 rounded-md font-medium shadow-sm hover:shadow-md transition-shadow"
           >
             Add New
           </Link>
         </div>
 
-        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-          <div className="flex items-center">
-            <span className="text-xs sm:text-sm text-gray-600 mr-2">Show</span>
-            <select
-              value={entries}
-              onChange={handleEntriesChange}
-              className="border border-gray-300 rounded-md px-2 sm:px-3 py-1 text-xs sm:text-sm"
-            >
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            <span className="text-xs sm:text-sm text-gray-600 ml-2">entries</span>
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-sm">{error}</p>
           </div>
-        </div>
+        )}
+
+
+
+        {loading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-gray-600">Loading departments...</span>
+          </div>
+        ) : (
+          <>
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+              <div className="flex items-center">
+                <span className="text-xs sm:text-sm text-gray-600 mr-2">Show</span>
+                <select
+                  value={entries}
+                  onChange={handleEntriesChange}
+                  className="border border-gray-300 rounded-md px-2 sm:px-3 py-1 text-xs sm:text-sm"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span className="text-xs sm:text-sm text-gray-600 ml-2">entries</span>
+              </div>
+            </div>
 
         {viewMode === 'list' && (
           <div className="overflow-x-auto">
@@ -130,6 +156,9 @@ const AllDepartments = () => {
                 <tr>
                   <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Logo</th>
                   <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Name</th>
+                  <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Code</th>
+                  <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Head of Department</th>
+                  <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Max Students</th>
                   <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -151,9 +180,18 @@ const AllDepartments = () => {
                     <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 border-r border-gray-200">
                       {dep.name}
                     </td>
+                    <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 border-r border-gray-200">
+                      {dep.code}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 border-r border-gray-200">
+                      {dep.headOfDepartment || 'Not assigned'}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 border-r border-gray-200">
+                      {dep.maxStudents || 'Unlimited'}
+                    </td>
                     <td className="px-3 sm:px-6 py-2 whitespace-nowrap text-xs sm:text-sm font-medium flex space-x-1 sm:space-x-2">
                       <Link
-                        href={`/admin/departments/edit/${dep._id}`}
+                        href={`/admin/departments/editDepartments/${dep._id}`}
                         className="p-1 sm:p-2 rounded-full bg-green-200 hover:bg-green-300">
                         <EditIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-700" />
                       </Link>
@@ -190,9 +228,28 @@ const AllDepartments = () => {
                   <h3 className="text-md sm:text-lg font-bold text-gray-800 mb-1">
                     {dep.name}
                   </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm mb-2">Code: {dep.code}</p>
+                  
+                  <div className="text-xs text-gray-600 mb-2 sm:mb-3">
+                    {dep.departmentDetails && (
+                      <p className="mb-1">{dep.departmentDetails}</p>
+                    )}
+                  </div>
+                  
+                  <div className="mt-auto">
+                    <p className="mb-1">
+                      <span className="text-gray-600 text-xs sm:text-sm">
+                        Head: {dep.headOfDepartment || 'Not assigned'}
+                      </span>
+                    </p>
+                    <p className="mb-2 sm:mb-3">
+                      <span className="text-gray-600 text-xs sm:text-sm">
+                        Max Students: {dep.maxStudents || 'Unlimited'}
+                      </span>
+                    </p>
+                  </div>
                 </div>
                 
-                {/* Read More Button */}
                 <button className="bg-pink-500 hover:bg-pink-600 text-white px-3 sm:px-4 py-1 rounded-full text-xs font-medium transition-colors mt-1 sm:mt-2 mx-auto">
                   Read More
                 </button>
@@ -249,7 +306,9 @@ const AllDepartments = () => {
               Next
             </button>
           </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

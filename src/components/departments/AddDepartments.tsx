@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { createDepartment, type CreateDepartmentPayload } from "@/components/services/departmentService";
+import { createDepartment, type CreateDepartmentPayload } from "../services";
 
 const AddDepartment = () => {
   const [formValues, setFormValues] = useState<{

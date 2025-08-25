@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EditIcon, DeleteIcon } from '../Icons';
-import { getStudents, deleteStudent } from '@/components/services/studentService';
+import { getStudents, deleteStudent } from '../services';
 
 const AllStudents = () => {
   const [viewMode, setViewMode] = useState('list');

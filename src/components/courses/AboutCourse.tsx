@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { getCourse,getCourseStudents} from "../services/courseService";
+import { getCourse,getCourseStudents} from "../services";
 import Link from 'next/link';
 
 interface CourseDetails {
