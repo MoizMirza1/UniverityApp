@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState,useEffect } from 'react';
+import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
 import { format } from 'date-fns';
-import { createCourse } from '../services';
+import { createCourse ,previewCourseCode, getDepartments } from '../services';
+import Loader from '../common/Loader';
 
 export const AddCourses: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,15 +17,23 @@ export const AddCourses: React.FC = () => {
     professorName: '',
     maximumStudents: '',
     contactNumber: '',
-    coursePhoto: null as File | null
+    coursePhoto: null as File | null,
+    level: '',
+    department: ''
+    
   });
 
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLevelDropdownOpen, setIsLevelDropdownOpen] = useState(false);
+  const [isDepartmentDropdownOpen, setIsDepartmentDropdownOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   const professors = [
     'Dr. John Smith',
@@ -34,7 +43,48 @@ export const AddCourses: React.FC = () => {
     'Dr. Robert Wilson'
   ];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const levels = [1, 2, 3, 4, 5];
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const depts = await getDepartments();
+        setDepartments(depts);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
+      finally{
+        setIsPageLoading(false)
+      }
+    };
+    
+    fetchDepartments();
+  }, []);
+
+// Generate course code when department or level changes
+  useEffect(() => {
+    const generateCourseCode = async () => {
+      if (formData.department && formData.level) {
+        setIsGeneratingCode(true);
+        try {
+          const code = await previewCourseCode(formData.department, Number(formData.level));
+          setFormData(prev => ({
+            ...prev,
+            courseCode: code
+          }));
+        } catch (error) {
+          console.error('Error generating course code:', error);
+          setError('Failed to generate course code');
+        } finally {
+          setIsGeneratingCode(false);
+        }
+      }
+    };
+
+    generateCourseCode();
+  }, [formData.department, formData.level]);
+
+   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -48,6 +98,22 @@ export const AddCourses: React.FC = () => {
       professorName: professor
     }));
     setIsDropdownOpen(false);
+  };
+
+   const handleLevelSelect = (level: number) => {
+    setFormData(prev => ({
+      ...prev,
+      level: level.toString()
+    }));
+    setIsLevelDropdownOpen(false);
+  };
+
+   const handleDepartmentSelect = (departmentId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      department: departmentId
+    }));
+    setIsDepartmentDropdownOpen(false);
   };
 
   const handleDateSelect = (date: Date) => {
@@ -136,6 +202,8 @@ export const AddCourses: React.FC = () => {
 
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
      try {
     const courseData = {
@@ -149,20 +217,23 @@ export const AddCourses: React.FC = () => {
       maxStudents: Number(formData.maximumStudents),
       contactNumber: formData.contactNumber,
       image: formData.coursePhoto?.name || 'no-photo.jpg', 
-      students: [] 
+      students: [],
+      level: Number(formData.level),
+      department: formData.department
     };
 
 
       // Call the API
       const response = await createCourse(courseData);
-      
       console.log('Course created successfully!' , response);
-      // Reset form after successful submission
       handleCancel();
     } catch (err) {
       console.error('Error creating course:', err);
       console.log(err instanceof Error ? err.message : 'Failed to create course');
     } 
+    finally{
+      setIsSubmitting(false)
+    }
   };
 
   const handleCancel = () => {
@@ -176,14 +247,29 @@ export const AddCourses: React.FC = () => {
       professorName: '',
       maximumStudents: '',
       contactNumber: '',
-      coursePhoto: null
+      coursePhoto: null,
+      level: '',
+      department: ''
     });
     setError(null);
   };
 
+   if (isPageLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <Loader size="large" text="Loading form..." />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-10xl mx-auto">
+       {isPageLoading ? (
+        <div className="flex items-center justify-center min-h-screen">
+        <Loader size="large" text="Loading form..." />
+      </div>
+       )  : (
+  <div className="max-w-10xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-4 md:px-8 py-6 border-b border-gray-200">
             <h1 className="text-lg md:text-xl font-medium text-gray-900">Course Details</h1>
@@ -221,16 +307,18 @@ export const AddCourses: React.FC = () => {
                   className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
-              <div>
+               <div className="relative">
                 <input
                   type="text"
                   name="courseCode"
-                  placeholder="Course Code"
+                  placeholder={isGeneratingCode ? "Generating Course Code..." : "Course Code (auto-generated)"}
                   value={formData.courseCode}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400"
+                  readOnly
+                  className="w-full px-0 py-3 border-0 border-b border-gray-200 focus:outline-none focus:border-gray-200 bg-gray-100 text-gray-500 placeholder-gray-400  cursor-not-allowed"
                 />
+                {isGeneratingCode && (
+                  <RefreshCcw className="absolute right-0 top-3 w-5 h-5 text-gray-400 animate-spin" />
+                )}
               </div>
             </div>
 
@@ -245,6 +333,67 @@ export const AddCourses: React.FC = () => {
                 className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-gray-900 placeholder-gray-400 resize-none"
               />
             </div>
+
+            {/* Level and Department Dropdowns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
+                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between"
+                >
+                  <span className={formData.level ? 'text-gray-900' : 'text-gray-400'}>
+                    {formData.level ? `Level ${formData.level}` : 'Select Level'}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </button>
+                {isLevelDropdownOpen && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                    {levels.map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => handleLevelSelect(level)}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900"
+                      >
+                        Level {level}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+                  <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)}
+                  className="w-full px-0 py-3 border-0 border-b border-gray-300 focus:outline-none focus:border-gray-500 bg-transparent text-left flex items-center justify-between"
+                >
+                  <span className={formData.department ? 'text-gray-900' : 'text-gray-400'}>
+                    {formData.department 
+                      ? departments.find(d => d._id === formData.department)?.name || 'Selected Department'
+                      : 'Select Department'
+                    }
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </button>
+                {isDepartmentDropdownOpen && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {departments.map((department) => (
+                      <button
+                        key={department._id}
+                        type="button"
+                        onClick={() => handleDepartmentSelect(department._id)}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-gray-900"
+                      >
+                        {department.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              </div>
+
+          
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div className="relative">
@@ -421,12 +570,12 @@ export const AddCourses: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-center space-x-6 pt-8 ">
+            <div className="flex items-center justify-center space-x-6 pt-8">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !formData.courseCode}
                 className={`px-3 py-2 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium text-sm tracking-wide ${
-                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                  isSubmitting || !formData.courseCode ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
                 {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
@@ -445,6 +594,7 @@ export const AddCourses: React.FC = () => {
           </form>
         </div>
       </div>
+       )}
     </div>
   );
 };

@@ -307,7 +307,7 @@ export const AllCourses: React.FC = () => {
 
         {isFilterLoading ? (
           <div className="flex justify-center py-10">
-            <Loader size="small" text="Loading courses..." /> {/* Use smaller loader for filter operations */}
+            <Loader size="small" text="Loading courses..." /> 
           </div>
         ) : courses.length === 0 ? (
           <div className="text-gray-500 text-center py-10">
