@@ -27,7 +27,7 @@ export default function SignInPage() {
   return (
     <div className="flex items-center justify-center min-h-screen py-8 px-4 sm:px-6 lg:px-4">
       <div className="w-full max-w-xl bg-gradient-to-br from-blue-100 to-gray-100 rounded-2xl shadow-xl overflow-hidden p-8">
-        {/* Header with Sign In text */}
+        
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Sign In</h1>
           <p className="text-gray-600 mt-2">Access your account to continue</p>

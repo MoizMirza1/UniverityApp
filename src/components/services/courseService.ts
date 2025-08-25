@@ -29,6 +29,11 @@ export const getCoursesByDepartment = async (departmentId: string) => {
   return data.data.courses;
 };
 
+export const previewCourseCode = async (departmentId: string, level: number) => {
+  const data = await apiClient(`/courses/preview?departmentId=${departmentId}&level=${level}`);
+  return data.data.courseCode;
+};
+
 
 export const deleteCourse = async (id: string) => {
   const data = await apiClient(`/courses/${id}`, {
