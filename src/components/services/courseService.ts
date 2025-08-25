@@ -23,6 +23,13 @@ export const getCourse = async (id: string) => {
   return data.data.course;
 };
 
+// DepId pass krke specific dep ke courses show krskte + level bhi
+export const getCoursesByDepartment = async (departmentId: string) => {
+  const data = await apiClient(`/department/${departmentId}`);
+  return data.data.courses;
+};
+
+
 export const deleteCourse = async (id: string) => {
   const data = await apiClient(`/courses/${id}`, {
     method: "DELETE",
