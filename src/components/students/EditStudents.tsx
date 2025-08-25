@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
-import { updateStudent, getStudent } from '@/components/services/studentService';
-import { getDepartments } from '@/components/services/departmentService';
+import { updateStudent, getStudent, getDepartments } from '../services';
 
 type StudentData = {
   firstName: string;

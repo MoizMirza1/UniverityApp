@@ -3,8 +3,7 @@
 import React, { useState,useEffect } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
-import { createStudent , previewRollNumber } from '@/components/services/studentService';
-import { getDepartments } from '@/components/services/departmentService';
+import { createStudent , previewRollNumber, getDepartments } from '../services';
 
 export const AddStudents: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -62,9 +61,6 @@ export const AddStudents: React.FC = () => {
     const selectedDep = departments.find(d => d.name === selectedName);
     if (!selectedDep) return;
 
-    console.log('Selected department:', selectedDep);
-    console.log('Department code:', selectedDep.code);
-
     setFormData(prev => ({
       ...prev,
       department: selectedDep._id,
@@ -78,12 +74,7 @@ export const AddStudents: React.FC = () => {
     
     try {
       // Use backend API to generate roll number
-      console.log('Generating roll number for department:', selectedDep._id);
       const rollNumber = await previewRollNumber(selectedDep._id);
-      console.log('Generated roll number:', rollNumber);
-      
-      // The backend already returns the correct format, just use it as is
-      console.log('Formatted roll number:', rollNumber);
       
       setFormData(prev => ({
         ...prev,

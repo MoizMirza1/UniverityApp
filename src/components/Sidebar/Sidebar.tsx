@@ -57,7 +57,7 @@ const adminNavigation = [
       { name: "All Departments", href: "/admin/departments/allDepartments" },
       { name: "Add Departments", href: "/admin/departments/addDepartments" },
       { name: "Add Departments Bootstrap", href: "/admin/departments/add-bootstrap" },
-      { name: "Edit Departments", href: "/admin/departments/editDepartments" },
+      // { name: "Edit Departments", href: "/admin/departments/editDepartments" },
       { name: "About Departments", href: "/admin/departments/aboutDepartments"},
     ]
   },

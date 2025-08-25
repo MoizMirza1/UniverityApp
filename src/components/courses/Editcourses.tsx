@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { MoreVertical, ChevronDown, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
-import { updateCourse } from '@/components/services/courseService';
+import { updateCourse } from '../services';
 
 interface CourseData {
   _id?: string;
